@@ -1,0 +1,18 @@
+--- channelsplitter.cpp
++++ channelsplitter.cpp
+@@ -63,11 +63,11 @@
+ 
+ void ChannelSplitter::splitData(void) {
+ 
+-  DTPrimitive* dtpAux = (DTPrimitive*) dataIn.pop();
+-
+-  /* To avoid NULL pointer after a 'stop' command */
+-  if (dtpAux == NULL) return;
++  DTPrimitive* dtpAux = (DTPrimitive*) dataIn.pop();
++
++  /* To avoid NULL pointer after a 'stop' command */
++  if (dtpAux == NULL) return;
+ 
+   int channel = dtpAux->getChannelId();
+   int layer   = dtpAux->getLayerId();
+ 

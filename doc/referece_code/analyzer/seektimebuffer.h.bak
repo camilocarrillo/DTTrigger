@@ -1,0 +1,88 @@
+/**
+ * Project:    cms
+ * Subproject: tracrecons
+ * File name:  seektimebuffer.h
+ * Language:   C++
+ *
+ * *********************************************************************
+ * Description:
+ *
+ *
+ * To Do:
+ *
+ * Author: Jose Manuel Cela <josemanuel.cela@ciemat.es>
+ *
+ * *********************************************************************
+ * Copyright (c) 2015-03-04 Jose Manuel Cela <josemanuel.cela@ciemat.es>
+ *
+ * For internal use, all rights reserved.
+ * *********************************************************************
+ */
+#ifndef SEEKTIMEBUFFER_H
+#define SEEKTIMEBUFFER_H
+
+#include "i_pusher.h"
+#include "i_popper.h"
+#include "ringbuffer.h"
+
+using namespace CIEMAT;
+
+namespace CMS {
+
+class SeekTimeBuffer : public I_Popper, public I_Pusher {
+
+  public:
+    SeekTimeBuffer(unsigned int maxSize = 2, int layId = 0, int chId = 0)
+      throw (CException);
+    virtual ~SeekTimeBuffer();
+
+    I_Object* pop(void);
+    void push(I_Object* obj);
+    void reset(void);
+
+    void setNumItemsRollBack(unsigned int num);
+    unsigned int getNumItemsRollBack(void);
+    unsigned int storedElements(void);
+
+    void setTimeWindow(int time);
+    int getTimeWindow(void);
+
+    void setCurrentTime(int time);
+    int getCurrentTime(void);
+
+  private:
+    RingBuffer buffer;
+    pthread_mutex_t mtx;
+    /*
+      Items number to 'pop' before rolling-back internal seeking pointer.
+      When this componente is called by 'PathDataMixer', this values should be
+      coincident with the number of items to be extracted from the channel,
+      in one turn, to be mixed with others extracted from others channels.
+      In other words, it should have the same value as that configured in the
+      'combination' attribute of 'PathDataMixer'
+     */
+    unsigned int numItemsRollBack;
+    /*
+      Since first DTPrimitives, stored at lower index buffer positions, are
+      those with TDC Time far away in the past, we need to read and process
+      these first.
+      So 'readPtr' is a pointer relative to the END of the Buffer instead to
+      the begining. It's necessary to manage it carefuly because buffer size
+      can change while processing data
+     */
+    unsigned int readPtr;
+
+    int timeWindow;
+    int currentTime;
+    int oldCurrentTime;
+
+    bool BXOverFlow;
+    bool timeOriginSurpassed;
+
+    int channelId;
+    int layerId;
+};
+
+}
+
+#endif

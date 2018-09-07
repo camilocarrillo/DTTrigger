@@ -1,0 +1,211 @@
+/**
+ * Project:    cms
+ * Subproject: tracrecons
+ * File name:  seektimebuffer.cpp
+ * Language:   C++
+ *
+ * *********************************************************************
+ * Description:
+ *
+ *
+ * To Do:
+ *
+ * Author: Jose Manuel Cela <josemanuel.cela@ciemat.es>
+ *
+ * *********************************************************************
+ * Copyright (c) 2015-03-04 Jose Manuel Cela <josemanuel.cela@ciemat.es>
+ *
+ * For internal use, all rights reserved.
+ * *********************************************************************
+ */
+#include "seektimebuffer.h"
+#include "dtprimitive.h"
+#include "logmacros.h"
+
+namespace CMS {
+//------------------------------------------------------------------
+//--- Constructores y destructores
+//------------------------------------------------------------------
+SeekTimeBuffer::SeekTimeBuffer(unsigned int maxSize, int layId, int chId)
+  throw (CException) : I_Popper(), I_Pusher(), buffer(maxSize)
+{
+  LOGTRACE("Creando un 'SeekTimeBuffer'");
+
+  /* To avoid internal-buffer data overwritting */
+  buffer.setDataOverWritingMode(false);
+  pthread_mutex_init(&mtx, NULL);
+  channelId = chId;
+  layerId   = layId;
+  reset();
+}
+
+SeekTimeBuffer::~SeekTimeBuffer() {
+  LOGTRACE("Destruyendo un 'SeekTimeBuffer'");
+  pthread_mutex_destroy(&mtx);
+}
+
+//------------------------------------------------------------------
+//--- Métodos públicos
+//------------------------------------------------------------------
+/**
+ * This method returns a 'DTPrimitive' stored into the internal buffer which
+ * 'tdcTime' is within the configured time window.
+ *
+ * Programmed time window is a value relative to some sort of "current time".
+ *
+ * If no one within that window is found, it returns a new dummy 'DTPrimtive'
+ * with its time value invalidated (this is the default behaviour of a
+ * 'DTPrimitive' object when created by its default constructor), in order to
+ * avoid returning NULL objects which could give problems to the caller of this
+ * method (mainly 'PathDataMixer' component).
+ */
+I_Object* SeekTimeBuffer::pop(void) {
+
+  LOGTRACEFN_IN;
+
+  DTPrimitive *objPtr = NULL;
+  DTPrimitive *objAux = NULL;
+
+  pthread_mutex_lock(&mtx);
+
+  unsigned int numElements = buffer.storedElements();
+
+  LOGTRACE(NString("Pop en 'SeekTimeBuffer'. Layer: ").\
+           nAppend("%d", layerId).sAppend(", Channel: ").\
+           nAppend("%d", channelId).sAppend(". Elementos: ").\
+           nAppend("%d", numElements));
+
+  if (readPtr >= numItemsRollBack || readPtr >= numElements) readPtr = 0;
+
+  /*
+    ***********************
+    *** if (readPtr >= numItemsRollBack) readPtr = 0;
+    ***********************
+    After modifying previous condition (I leave the original code here), next condition
+    is unnecessary, except in case that readPtr = 0, and numElements = 0 (empty buffer),
+    when the SeekTimeBuffers must return a VOID object.
+    So, DON'T REMOVE THIS apparently unuseful CONDITION UNLESS YOU KNOW WHAT YOU'RE DOING.
+
+    The only part of the code that can be removed is the additional "else", which doesn't
+    make sense now.
+
+    ***********************
+    *** else readPtr = 0;
+    ***********************
+    As well as the original condition, I leave this "else" commented here, to understand
+    the difference with the original code.
+    I suggest to look at the HG control version system to know more about that, if it's
+    necessary.
+   */
+  if (readPtr < numElements) {
+    // Pointers are relative to the end of the internal RingBuffer.
+    objAux = (DTPrimitive*) buffer.readAt(numElements - readPtr - 1);
+    int tdcTime = objAux->getTDCTime();
+    /*
+      Este código es necesario para rearmar el control 'BXOverFlow'. Se lleva a
+      cabo cuando el tiempo, que tiene carácter cíclico debido al límite de bits
+      en los contadores, ha sobrepasado nuevamente el origen de tiempos y,
+      además una de las nuevas 'DTPrimitives' extraídas ha superado el valor
+      del 'currentTime'. Esta condición asegura que no se pierden primitivas
+      almacenadas en el buffer debido a un pronto rearmado del 'BXOverFlow', que
+      haría empezar a expirar ('forgetData') los objetos del buffer.
+     */
+    if (BXOverFlow && timeOriginSurpassed && currentTime >= tdcTime)
+      BXOverFlow = false;
+    /*
+      If TDC time is within configured time-window, it's created an object's
+      copy, and sent to this method caller
+     */
+    if (tdcTime > currentTime - timeWindow)
+      objPtr = new DTPrimitive( objAux );
+    else if (!BXOverFlow)
+      buffer.forgetData(numElements - readPtr);
+
+    readPtr++;
+  }
+
+  pthread_mutex_unlock(&mtx);
+
+  LOGTRACE(NString("Final de Pop en 'SeekTimeBuffer'. Layer: ").\
+           nAppend("%d", layerId).sAppend(", Channel: ").\
+           nAppend("%d", channelId));
+  /*
+    If we haven't found any valid DTPrimitive, we return a not NULL object,
+    but with its TDC time value marked as not-valid (default behaviour)
+   */
+  if (objPtr == NULL) objPtr = new DTPrimitive();
+  return objPtr;
+}
+
+/**
+ * Inserts a new DTPrimitive in the buffer.
+ * It has been modified in order to detect cases when is likely that a new
+ * 'DTPrimitive' has a time-stamp that overflows BX Counter. In this case, this
+ * new object must not be remove by the time-window exclusion mechanism,
+ * implemented within 'pop' method
+ */
+void SeekTimeBuffer::push(I_Object* obj) {
+  LOGTRACEFN_IN;
+
+  pthread_mutex_lock(&mtx);
+  int tdcTime = ((DTPrimitive*) obj)->getTDCTime();
+
+  if (tdcTime < currentTime) BXOverFlow = true;
+  pthread_mutex_unlock(&mtx);
+
+  buffer.push(obj);
+}
+
+void SeekTimeBuffer::reset(void) {
+  LOGTRACEFN_IN;
+
+  numItemsRollBack    = 1;
+  readPtr             = 0;
+  timeWindow          = 0;
+  currentTime         = 0;
+  oldCurrentTime      = 0;
+  BXOverFlow          = false;
+  timeOriginSurpassed = false;
+
+  buffer.reset();
+}
+
+//------------------------------------------------------------------
+//--- Métodos get / set
+//------------------------------------------------------------------
+void SeekTimeBuffer::setNumItemsRollBack(unsigned int num) {
+  if (num > 0) numItemsRollBack = num;
+}
+
+unsigned int SeekTimeBuffer::getNumItemsRollBack(void) {
+  return numItemsRollBack;
+}
+
+unsigned int SeekTimeBuffer::storedElements(void) {
+  return buffer.storedElements();
+}
+
+void SeekTimeBuffer::setTimeWindow(int time) { timeWindow = time; }
+int SeekTimeBuffer::getTimeWindow(void) { return timeWindow; }
+
+void SeekTimeBuffer::setCurrentTime(int time) {
+  pthread_mutex_lock(&mtx);
+  /*
+    Se supone que el 'time' es cambiado de forma lineal, pero tiene un
+    comportamiento cíclico debido al tamaño finito del contador de tiempos, lo
+    que produce overflow del mismo.
+    Si se cumple esta condición, se ha producido un overflow del 'currentTime'
+    y se ha cruzado el origen de tiempos. En ese caso registramos con un boolean
+    el suceso.
+  */
+  if (time < oldCurrentTime) timeOriginSurpassed = true;
+  else timeOriginSurpassed = false;
+
+  oldCurrentTime = currentTime;
+  currentTime    = time;
+
+  pthread_mutex_unlock(&mtx);
+}
+int SeekTimeBuffer::getCurrentTime(void) { return currentTime; }
+
+}

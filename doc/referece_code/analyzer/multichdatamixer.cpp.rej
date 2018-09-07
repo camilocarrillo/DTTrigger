@@ -1,0 +1,16 @@
+--- multichdatamixer.cpp
++++ multichdatamixer.cpp
+@@ -119,13 +124,8 @@
+   */
+   for(int baseCh = 0; baseCh < TOTAL_BTI; baseCh++) {
+     currentBaseChannel = baseCh;
+     selectInChannels(baseCh);
+     if (!roundRobin) return;
+ 
+-    /* Si no hay suficientes datos para construir trazas, saltamos al
+-     * siguiente canal base. Deberíamos ahorrar mucho tiempo de proceso.
+-     */
+-    if ( notEnoughDataInChannels() ) continue;
+-    
+     for(int pathId = 0; pathId < 8; pathId++) {
+       if (!roundRobin) return;
