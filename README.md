@@ -1,4 +1,5 @@
 # DTTrigger
+
 Producer and Analyzer for Phase2 DT rigger primitives based on meantimer.
 
 ```sh 
@@ -8,4 +9,6 @@ cmsenv
 mkdir L1Trigger;cd L1Trigger
 git clone git://github.com/camilocarrillo/DTTrigger.git
 scram b -j 16
+cd DTTrigger/test
+cmsRun *
 ```
