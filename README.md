@@ -1,3 +1,11 @@
 # DTTrigger
 Producer and Analyzer for Phase2 DT rigger primitives based on meantimer.
-clone under src/L1Trigger
+
+```sh 
+cmsrel CMSSW_10_1_1
+cd CMSSW_10_1_1/src/
+cmsenv
+mkdir L1Trig
+git clone git://github.com/camilocarrillo/DTTrigger.git
+scram b -j 16
+```
