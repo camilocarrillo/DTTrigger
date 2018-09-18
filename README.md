@@ -11,4 +11,8 @@ git clone git://github.com/camilocarrillo/DTTrigger.git
 scram b -j 16
 cd DTTrigger/test
 cmsRun *
+cd ../html
+root -b make_up.C
+./update.sh
+cd ../
 ```
