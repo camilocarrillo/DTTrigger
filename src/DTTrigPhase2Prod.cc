@@ -32,6 +32,7 @@ DTTrigPhase2Prod::DTTrigPhase2Prod(const ParameterSet& pset) : my_trig(nullptr) 
   my_lut_dump_flag = pset.getUntrackedParameter<bool>("lutDumpFlag");
   my_lut_btic = pset.getUntrackedParameter<int>("lutBtic");
   if(!(my_trig)) my_trig = new DTTrig(my_params,consumesCollector());
+  digiLabel_ = pset.getParameter<edm::InputTag>("digiTag");
 }
 
 DTTrigPhase2Prod::~DTTrigPhase2Prod(){
@@ -60,9 +61,25 @@ void DTTrigPhase2Prod::beginRun(edm::Run const& iRun, const edm::EventSetup& iEv
 
 void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 
+  Handle<DTDigiCollection> dtdigis;
+  iEvent.getByLabel(digiLabel_, dtdigis);
+
+  DTDigiCollection::DigiRangeIterator dtLayerId_It;
+  for (dtLayerId_It=dtdigis->begin(); dtLayerId_It!=dtdigis->end(); ++dtLayerId_It){
+      for (DTDigiCollection::const_iterator digiIt = ((*dtLayerId_It).second).first;digiIt!=((*dtLayerId_It).second).second; ++digiIt){
+	  //Check the TDC trigger width
+	  const DTLayerId dtLId = (*dtLayerId_It).first;
+          int tdcTime = (*digiIt).countsTDC();
+	  int wire = (*digiIt).wire();
+	  std::cout<<"dtLId,wire,tdcTime:"<<dtLId<<" , "<<wire<<" , "<<tdcTime<<std::endl;
+	  
+      }
+  }
+
   vector<L1MuDTChambPhDigi> outPhi;
   vector<L1MuDTChambThDigi> outTheta;
 
+  /*
   my_trig->triggerReco(iEvent,iEventSetup);
   my_BXoffset = my_trig->getBXOffset();
   
@@ -72,16 +89,6 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
   // Convert Phi Segments
   SectCollPhiColl myPhiSegments;
   myPhiSegments = my_trig->SCPhTrigs();
-
-  //Rueda YB0, MB1, sector 6, c
-  DTLayerId LayerId(int wheel=0, int station=1, int sector=6, int superlayer=1, int layer=1);
-
-  //missing range defintion as a function of the defined LayerId
-
-  // Loop over all digis in the given range
-  for (DTDigiCollection::const_iterator digi = digiRange.first;digi != digiRange.second;digi++) {
-      std::count<<(*digi).wire()std<<endl;
-  }
   
   SectCollPhiColl_iterator SCPCend = myPhiSegments.end();
   for (SectCollPhiColl_iterator it=myPhiSegments.begin();it!=SCPCend;++it){
@@ -123,7 +130,7 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 					    ));
   }
   
-  
+  */
   // Write everything into the event (CB write empty collection as default actions if emulator does not run)
   std::unique_ptr<L1MuDTChambPhContainer> resultPhi (new L1MuDTChambPhContainer);
   resultPhi->setContainer(outPhi);

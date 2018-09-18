@@ -19,11 +19,11 @@ process.dtTriggerPhase2PrimitiveDigis.debug = True
 
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:/tmp/carrillo/22F281C2-588D-E711-876C-02163E01A505.root')
+    fileNames = cms.untracked.vstring('file:/tmp/carrillo/08FB56BD-80B4-E811-8B09-FA163EC6F3D0.root')
 )
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(10)
 )
 
 process.out = cms.OutputModule("PoolOutputModule",

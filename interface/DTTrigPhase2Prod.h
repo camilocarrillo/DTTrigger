@@ -22,7 +22,7 @@ public:
   
   //! Producer: process every event and generates trigger data
   void produce(edm::Event & iEvent, const edm::EventSetup& iEventSetup) override;
-  
+
 private:
 
   // Trigger istance
@@ -46,7 +46,8 @@ private:
 
   // ParameterSet
   edm::ParameterSet my_params;
-   
+  edm::InputTag digiLabel_;
+
 };
  
 #endif
