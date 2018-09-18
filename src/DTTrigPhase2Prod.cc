@@ -12,6 +12,8 @@
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTChambThDigi.h"
 #include "Geometry/DTGeometry/interface/DTLayer.h"
 #include <iostream>
+#include "TFile.h"
+#include "TH1F.h"
 
 using namespace edm;
 using namespace std;
@@ -36,7 +38,15 @@ DTTrigPhase2Prod::DTTrigPhase2Prod(const ParameterSet& pset) : my_trig(nullptr) 
 }
 
 DTTrigPhase2Prod::~DTTrigPhase2Prod(){
-  if (my_trig) delete my_trig;
+    std::cout<<"writing histograms and files"<<std::endl;
+    theFileOut->cd();
+    allTDChisto->Write();
+    wh0_se6_st1_sl1or3_TDChisto->Write();
+    wh0_se6_st1_sl1_TDChisto->Write();
+    wh0_se6_st1_sl3_TDChisto->Write();
+    theFileOut->Write();
+    theFileOut->Close();
+    if (my_trig) delete my_trig;
 }
 
 void DTTrigPhase2Prod::beginRun(edm::Run const& iRun, const edm::EventSetup& iEventSetup) {
@@ -55,7 +65,13 @@ void DTTrigPhase2Prod::beginRun(edm::Run const& iRun, const edm::EventSetup& iEv
       cout << "Dumping luts...." << endl;
       my_trig->dumpLuts(my_lut_btic, dtConfig.product());
   }	
-
+  
+  theFileOut = new TFile("dt_phase2.root", "RECREATE");
+  allTDChisto = new TH1F("allTDChisto","allTDChisto",1200,0.5,1200.5);
+  wh0_se6_st1_sl1or3_TDChisto = new TH1F("wh0_se6_st1_sl1or3_TDChisto","wh0_se6_st1_sl1or3_TDChisto",1200,0.5,1200.5);
+  wh0_se6_st1_sl1_TDChisto = new TH1F("wh0_se6_st1_sl1_TDChisto","wh0_se6_st1_sl1_TDChisto",1200,0.5,1200.5);
+  wh0_se6_st1_sl3_TDChisto = new TH1F("wh0_se6_st1_sl3_TDChisto","wh0_se6_st1_sl3_TDChisto",1200,0.5,1200.5);
+  
 }
 
 
@@ -67,12 +83,16 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
   DTDigiCollection::DigiRangeIterator dtLayerId_It;
   for (dtLayerId_It=dtdigis->begin(); dtLayerId_It!=dtdigis->end(); ++dtLayerId_It){
       for (DTDigiCollection::const_iterator digiIt = ((*dtLayerId_It).second).first;digiIt!=((*dtLayerId_It).second).second; ++digiIt){
-	  //Check the TDC trigger width
 	  const DTLayerId dtLId = (*dtLayerId_It).first;
-          int tdcTime = (*digiIt).countsTDC();
-	  int wire = (*digiIt).wire();
-	  std::cout<<"dtLId,wire,tdcTime:"<<dtLId<<" , "<<wire<<" , "<<tdcTime<<std::endl;
+	  int tdcTime = (*digiIt).countsTDC();
+	  allTDChisto->Fill(tdcTime);
+	  //only same superlayer as Jaime Leon
+	  if(dtLId.wheel()==0 && dtLId.sector()==6 && dtLId.station()==1 && (dtLId.superlayer()==1 || dtLId.superlayer()==3)) wh0_se6_st1_sl1or3_TDChisto->Fill(tdcTime);
+	  if(dtLId.wheel()==0 && dtLId.sector()==6 && dtLId.station()==1 && dtLId.superlayer()==1) wh0_se6_st1_sl1_TDChisto->Fill(tdcTime);
+	  if(dtLId.wheel()==0 && dtLId.sector()==6 && dtLId.station()==1 && dtLId.superlayer()==3) wh0_se6_st1_sl3_TDChisto->Fill(tdcTime);
 	  
+	  //int wire = (*digiIt).wire();
+	  //std::cout<<"dtLId,wire,tdcTime:"<<dtLId<<" , "<<wire<<" , "<<tdcTime<<std::endl;
       }
   }
 
@@ -80,6 +100,7 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
   vector<L1MuDTChambThDigi> outTheta;
 
   /*
+  //for the moment we fill up the primitives edm container with empty objects
   my_trig->triggerReco(iEvent,iEventSetup);
   my_BXoffset = my_trig->getBXOffset();
   
@@ -131,13 +152,14 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
   }
   
   */
+  //Writing products:
   // Write everything into the event (CB write empty collection as default actions if emulator does not run)
-  std::unique_ptr<L1MuDTChambPhContainer> resultPhi (new L1MuDTChambPhContainer);
-  resultPhi->setContainer(outPhi);
-  iEvent.put(std::move(resultPhi));
-  std::unique_ptr<L1MuDTChambThContainer> resultTheta (new L1MuDTChambThContainer);
-  resultTheta->setContainer(outTheta);
-  iEvent.put(std::move(resultTheta));
+  //std::unique_ptr<L1MuDTChambPhContainer> resultPhi (new L1MuDTChambPhContainer);
+  //resultPhi->setContainer(outPhi);
+  //iEvent.put(std::move(resultPhi));
+  //std::unique_ptr<L1MuDTChambThContainer> resultTheta (new L1MuDTChambThContainer);
+  //resultTheta->setContainer(outTheta);
+  // iEvent.put(std::move(resultTheta));
 
 }
 

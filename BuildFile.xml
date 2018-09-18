@@ -15,5 +15,7 @@
 <use   name="Utilities/General"/>
 <use   name="CLHEP"/>
 <use   name="root"/>
+<use   name="rootgraphics"/>
+
 
 <flags   EDM_PLUGIN="1"/>

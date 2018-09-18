@@ -6,8 +6,13 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "L1Trigger/DTTrigger/interface/DTTrig.h"
+#include "TFile.h"
+#include "TH1F.h"
+
+class TFile;
 
 class DTTrigPhase2Prod: public edm::EDProducer{
+
 public:
 
   //! Constructor
@@ -22,6 +27,14 @@ public:
   
   //! Producer: process every event and generates trigger data
   void produce(edm::Event & iEvent, const edm::EventSetup& iEventSetup) override;
+
+  //plots
+  TFile * theFileOut;
+  TH1F * allTDChisto;
+  TH1F * wh0_se6_st1_sl1or3_TDChisto;
+  TH1F * wh0_se6_st1_sl1_TDChisto;
+  TH1F * wh0_se6_st1_sl3_TDChisto;
+
 
 private:
 
