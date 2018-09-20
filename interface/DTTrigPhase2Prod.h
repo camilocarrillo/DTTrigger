@@ -8,6 +8,7 @@
 #include "L1Trigger/DTTrigger/interface/DTTrig.h"
 #include "TFile.h"
 #include "TH1F.h"
+#include "TH2F.h"
 
 class TFile;
 
@@ -30,10 +31,19 @@ public:
 
   //plots
   TFile * theFileOut;
+
   TH1F * allTDChisto;
   TH1F * wh0_se6_st1_sl1or3_TDChisto;
   TH1F * wh0_se6_st1_sl1_TDChisto;
   TH1F * wh0_se6_st1_sl3_TDChisto;
+
+  TH1F * allTDCPhase2histo;
+  TH1F * wh0_se6_st1_sl1or3_TDCPhase2histo;
+  TH1F * wh0_se6_st1_sl1_TDCPhase2histo;
+  TH1F * wh0_se6_st1_sl3_TDCPhase2histo;
+
+  TH2F * wirevslayer;
+  
 
 
 private:
