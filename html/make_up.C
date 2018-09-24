@@ -27,7 +27,7 @@ void make_up(){
   //Phase-1
 
   cout<<"creating canvas"<<endl;
-  TCanvas * Ca0 = new TCanvas("Ca0","Ca0",9600,1600);
+  TCanvas * Ca0 = new TCanvas("Ca0","Ca0",9600,3200);
   Ca0->cd();
  
   //TDC
@@ -119,7 +119,7 @@ void make_up(){
 
   //Phase-2
 
-  TCanvas * Ca1 = new TCanvas("Ca1","Ca1",9600,1600);
+  TCanvas * Ca1 = new TCanvas("Ca1","Ca1",9600,3200);
   Ca1->cd();
 
 
