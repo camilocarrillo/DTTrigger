@@ -15,7 +15,7 @@ process.GlobalTag.globaltag = "90X_dataRun2_Express_v2"
 
 
 process.dtTriggerPhase2PrimitiveDigis.digiTag = "hltMuonDTDigis"
-process.dtTriggerPhase2PrimitiveDigis.debug = True
+process.dtTriggerPhase2PrimitiveDigis.debug = False
 
 
 process.source = cms.Source("PoolSource",
@@ -45,5 +45,5 @@ process.out = cms.OutputModule("PoolOutputModule",
 )
 
 process.p = cms.Path(process.dtTriggerPhase2PrimitiveDigis)
-process.this_is_the_end = cms.EndPath(process.out)
+#process.this_is_the_end = cms.EndPath(process.out)
 

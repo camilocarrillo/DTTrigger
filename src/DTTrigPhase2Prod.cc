@@ -50,8 +50,19 @@ DTTrigPhase2Prod::~DTTrigPhase2Prod(){
     wh0_se6_st1_sl1or3_TDCPhase2histo->Write();
     wh0_se6_st1_sl1_TDCPhase2histo->Write();
     wh0_se6_st1_sl3_TDCPhase2histo->Write();
+    
+    allTIMEhisto->Write();
+    wh0_se6_st1_sl1or3_TIMEhisto->Write();
+    wh0_se6_st1_sl1_TIMEhisto->Write();
+    wh0_se6_st1_sl3_TIMEhisto->Write();
+
+    allTIMEPhase2histo->Write();
+    wh0_se6_st1_sl1or3_TIMEPhase2histo->Write();
+    wh0_se6_st1_sl1_TIMEPhase2histo->Write();
+    wh0_se6_st1_sl3_TIMEPhase2histo->Write();
 
     wirevslayer->Write();
+    wirevslayerzTDC->Write();
 
 
     theFileOut->Write();
@@ -80,17 +91,28 @@ void DTTrigPhase2Prod::beginRun(edm::Run const& iRun, const edm::EventSetup& iEv
 
   theFileOut = new TFile("dt_phase2.root", "RECREATE");
 
-  allTDChisto = new TH1F("allTDChisto","allTDChisto",1600,0.5,1600.5);
-  wh0_se6_st1_sl1or3_TDChisto = new TH1F("wh0_se6_st1_sl1or3_TDChisto","wh0_se6_st1_sl1or3_TDChisto",1600,0.5,1600.5);
-  wh0_se6_st1_sl1_TDChisto = new TH1F("wh0_se6_st1_sl1_TDChisto","wh0_se6_st1_sl1_TDChisto",1600,0.5,1600.5);
-  wh0_se6_st1_sl3_TDChisto = new TH1F("wh0_se6_st1_sl3_TDChisto","wh0_se6_st1_sl3_TDChisto",1600,0.5,1600.5);
+  //TDC
+  allTDChisto = new TH1F("allTDChisto","allTDChisto",1601,-0.5,1600.5);
+  wh0_se6_st1_sl1or3_TDChisto = new TH1F("wh0_se6_st1_sl1or3_TDChisto","wh0_se6_st1_sl1or3_TDChisto",1601,-0.5,1600.5);
+  wh0_se6_st1_sl1_TDChisto = new TH1F("wh0_se6_st1_sl1_TDChisto","wh0_se6_st1_sl1_TDChisto",1601,-0.5,1600.5);
+  wh0_se6_st1_sl3_TDChisto = new TH1F("wh0_se6_st1_sl3_TDChisto","wh0_se6_st1_sl3_TDChisto",1601,-0.5,1600.5);
+  allTDCPhase2histo = new TH1F("allTDCPhase2histo","allTDCPhase2histo",3563*32,-0.5,3563*32+1);
+  wh0_se6_st1_sl1or3_TDCPhase2histo = new TH1F("wh0_se6_st1_sl1or3_TDCPhase2histo","wh0_se6_st1_sl1or3_TDCPhase2histo",3563*32+1,-0.5,3563*32.5);
+  wh0_se6_st1_sl1_TDCPhase2histo = new TH1F("wh0_se6_st1_sl1_TDCPhase2histo","wh0_se6_st1_sl1_TDCPhase2histo",3563*32+1,-0.5,3563*32.5+1);
+  wh0_se6_st1_sl3_TDCPhase2histo = new TH1F("wh0_se6_st1_sl3_TDCPhase2histo","wh0_se6_st1_sl3_TDCPhase2histo",3563*32+1,-0.5,3563*32.5+1);
   
-  allTDCPhase2histo = new TH1F("allTDCPhase2histo","allTDCPhase2histo",89075,-0.5,89075.5+1);
-  wh0_se6_st1_sl1or3_TDCPhase2histo = new TH1F("wh0_se6_st1_sl1or3_TDCPhase2histo","wh0_se6_st1_sl1or3_TDCPhase2histo",89075,-0.5,89075.5+1);
-  wh0_se6_st1_sl1_TDCPhase2histo = new TH1F("wh0_se6_st1_sl1_TDCPhase2histo","wh0_se6_st1_sl1_TDCPhase2histo",89075,-0.5,89075.5+1);
-  wh0_se6_st1_sl3_TDCPhase2histo = new TH1F("wh0_se6_st1_sl3_TDCPhase2histo","wh0_se6_st1_sl3_TDCPhase2histo",89075,-0.5,89075.5+1);
+  //TIME
+  allTIMEhisto = new TH1F("allTIMEhisto","allTIMEhisto",1275,-0.5,1274.5);
+  wh0_se6_st1_sl1or3_TIMEhisto = new TH1F("wh0_se6_st1_sl1or3_TIMEhisto","wh0_se6_st1_sl1or3_TIMEhisto",1275,-0.5,1274.5);
+  wh0_se6_st1_sl1_TIMEhisto = new TH1F("wh0_se6_st1_sl1_TIMEhisto","wh0_se6_st1_sl1_TIMEhisto",1275,-0.5,1274.5);
+  wh0_se6_st1_sl3_TIMEhisto = new TH1F("wh0_se6_st1_sl3_TIMEhisto","wh0_se6_st1_sl3_TIMEhisto",1275,-0.5,1274.5);
+  allTIMEPhase2histo = new TH1F("allTIMEPhase2histo","allTIMEPhase2histo",89076,-0.5,89075.5);
+  wh0_se6_st1_sl1or3_TIMEPhase2histo = new TH1F("wh0_se6_st1_sl1or3_TIMEPhase2histo","wh0_se6_st1_sl1or3_TIMEPhase2histo",89076,-0.5,89075.5);
+  wh0_se6_st1_sl1_TIMEPhase2histo = new TH1F("wh0_se6_st1_sl1_TIMEPhase2histo","wh0_se6_st1_sl1_TIMEPhase2histo",89076,-0.5,89075.5);
+  wh0_se6_st1_sl3_TIMEPhase2histo = new TH1F("wh0_se6_st1_sl3_TIMEPhase2histo","wh0_se6_st1_sl3_TIMEPhase2histo",89076,-0.5,89075.5);
   
-  wirevslayer = new TH2F("wirevslayer","wirevslayer",50,0.5,50.5,8,0.5,8.5);
+  wirevslayer     = new TH2F("wirevslayer","wirevslayer",50,0.5,50.5,8,0.5,8.5);
+  wirevslayerzTDC = new TH2F("wirevslayerzTDC","wirevslayerzTDC",50*1600,0.5,50+0.5,8,0.5,8.5);
 
 }
 
@@ -104,26 +126,43 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
   for (dtLayerId_It=dtdigis->begin(); dtLayerId_It!=dtdigis->end(); ++dtLayerId_It){
       for (DTDigiCollection::const_iterator digiIt = ((*dtLayerId_It).second).first;digiIt!=((*dtLayerId_It).second).second; ++digiIt){
 	  const DTLayerId dtLId = (*dtLayerId_It).first;
-	  int tdcTime = (*digiIt).countsTDC();
+
 	  int wire = (*digiIt).wire();
-	  int tdcPhase2 =  (*digiIt).countsTDC() *.78125 + iEvent.eventAuxiliary().bunchCrossing()*25;
+
+	  int digiTDC = (*digiIt).countsTDC();
+	  int digiTDCPhase2 =  (*digiIt).countsTDC()+ iEvent.eventAuxiliary().bunchCrossing()*32;
 	  
-	  allTDChisto->Fill(tdcTime);
-	  allTDCPhase2histo->Fill(tdcPhase2);
+	  int digiTIME = (*digiIt).time();
+	  int digiTIMEPhase2 =  (*digiIt).time()+ iEvent.eventAuxiliary().bunchCrossing()*25;
+	  
+	  allTDChisto->Fill(digiTDC);
+	  allTDCPhase2histo->Fill(digiTDCPhase2);
+
+	  allTIMEhisto->Fill(digiTIME);
+	  allTIMEPhase2histo->Fill(digiTIMEPhase2);
 
 	  //only same superlayer as CIEMAT study
 	  if(dtLId.wheel()==0 && dtLId.sector()==6 && dtLId.station()==1 && (dtLId.superlayer()==1 || dtLId.superlayer()==3)){
-	      wh0_se6_st1_sl1or3_TDChisto->Fill(tdcTime); 
-	      wh0_se6_st1_sl1or3_TDCPhase2histo->Fill(tdcPhase2);  
+
+	      wh0_se6_st1_sl1or3_TDChisto->Fill(digiTDC); 
+	      wh0_se6_st1_sl1or3_TDCPhase2histo->Fill(digiTDCPhase2);  
+
+	      wh0_se6_st1_sl1or3_TIMEhisto->Fill(digiTIME); 
+	      wh0_se6_st1_sl1or3_TIMEPhase2histo->Fill(digiTIMEPhase2);  
+
 	      wirevslayer->Fill(wire,(dtLId.superlayer()-1)*2+dtLId.layer());
+	      wirevslayerzTDC->Fill(wire-0.5+float(digiTDC)/1600.,(dtLId.superlayer()-1)*2+dtLId.layer());
+	  
+	      if(dtLId.superlayer()==1){
+		  wh0_se6_st1_sl1_TDChisto->Fill(digiTDC);wh0_se6_st1_sl1_TDCPhase2histo->Fill(digiTDCPhase2);
+		  wh0_se6_st1_sl1_TIMEhisto->Fill(digiTIME);wh0_se6_st1_sl1_TIMEPhase2histo->Fill(digiTIMEPhase2);
+	      }
+	      if(dtLId.superlayer()==3){
+		  wh0_se6_st1_sl3_TDChisto->Fill(digiTDC);wh0_se6_st1_sl3_TDCPhase2histo->Fill(digiTDCPhase2);
+		  wh0_se6_st1_sl3_TIMEhisto->Fill(digiTIME);wh0_se6_st1_sl3_TIMEPhase2histo->Fill(digiTIMEPhase2);
+	      }
 	  }
-	  if(dtLId.wheel()==0 && dtLId.sector()==6 && dtLId.station()==1 && dtLId.superlayer()==1){
-	      wh0_se6_st1_sl1_TDChisto->Fill(tdcTime);wh0_se6_st1_sl1_TDCPhase2histo->Fill(tdcPhase2);
-	  }
-	  if(dtLId.wheel()==0 && dtLId.sector()==6 && dtLId.station()==1 && dtLId.superlayer()==3){
-	      wh0_se6_st1_sl3_TDChisto->Fill(tdcTime);wh0_se6_st1_sl3_TDCPhase2histo->Fill(tdcPhase2);
-	  }
-	  //std::cout<<"dtLId,wire,tdcTime:"<<dtLId<<" , "<<wire<<" , "<<tdcTime<<std::endl;
+	  //std::cout<<"dtLId,wire,digiTDC:"<<dtLId<<" , "<<wire<<" , "<<digiTDC<<std::endl;
       }
   }
 

@@ -36,15 +36,23 @@ public:
   TH1F * wh0_se6_st1_sl1or3_TDChisto;
   TH1F * wh0_se6_st1_sl1_TDChisto;
   TH1F * wh0_se6_st1_sl3_TDChisto;
-
   TH1F * allTDCPhase2histo;
   TH1F * wh0_se6_st1_sl1or3_TDCPhase2histo;
   TH1F * wh0_se6_st1_sl1_TDCPhase2histo;
   TH1F * wh0_se6_st1_sl3_TDCPhase2histo;
 
-  TH2F * wirevslayer;
-  
+  TH1F * allTIMEhisto;
+  TH1F * wh0_se6_st1_sl1or3_TIMEhisto;
+  TH1F * wh0_se6_st1_sl1_TIMEhisto;
+  TH1F * wh0_se6_st1_sl3_TIMEhisto;
+  TH1F * allTIMEPhase2histo;
+  TH1F * wh0_se6_st1_sl1or3_TIMEPhase2histo;
+  TH1F * wh0_se6_st1_sl1_TIMEPhase2histo;
+  TH1F * wh0_se6_st1_sl3_TIMEPhase2histo;
 
+  TH2F * wirevslayer;
+  TH2F * wirevslayerzTDC;
+  
 
 private:
 
