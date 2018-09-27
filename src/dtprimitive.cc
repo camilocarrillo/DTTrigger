@@ -1,5 +1,6 @@
 #include "L1Trigger/DTTrigger/src/dtprimitive.h"
 #include "L1Trigger/DTTrigger/src/constants.h"
+#include <iostream> 
 
 //------------------------------------------------------------------
 //--- Constructores y destructores

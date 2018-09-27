@@ -1,9 +1,12 @@
 #ifndef MUONPATH_H
 #define MUONPATH_H
+#include <iostream> 
+#include "analtypedefs.h"
+
 
 #include "L1Trigger/DTTrigger/src/dtprimitive.h"
 
-class MuonPath : {
+class MuonPath {
 
   public:
     MuonPath(DTPrimitive *ptrPrimitive[4]);

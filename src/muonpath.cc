@@ -2,6 +2,7 @@
 
 #include <cstring>  // Para función "memcpy"
 #include "math.h"
+#include <iostream>
 
 MuonPath::MuonPath(DTPrimitive *ptrPrimitive[4]) {
     std::cout<<"Creando un 'MuonPath'"<<std::endl;
@@ -11,7 +12,7 @@ MuonPath::MuonPath(DTPrimitive *ptrPrimitive[4]) {
 
     for (int i = 0; i <= 3; i++) {
 	if ( (prim[i] = ptrPrimitive[i]) == NULL )
-	    std::cout<<"Unable to create 'MuonPath'. Null 'Primitive'."<<std::cout;
+	    std::cout<<"Unable to create 'MuonPath'. Null 'Primitive'."<<std::endl;
     }
 
     bxTimeValue = -1;
@@ -62,7 +63,7 @@ MuonPath::~MuonPath() {
  * Añade una 'DTPrimitive'
  */
 void MuonPath::setPrimitive(DTPrimitive *ptr, int layer){
-    if (ptr == NULL) std::cout<<"NULL 'Primitive'."<<std::cout;
+    if (ptr == NULL) std::cout<<"NULL 'Primitive'."<<std::endl;
     prim[layer] = ptr;
 }
 

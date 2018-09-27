@@ -14,7 +14,7 @@
 
 #include "constants.h"
 
-class DTPrimitive : {
+class DTPrimitive {
 
   public:
     DTPrimitive();
@@ -67,7 +67,7 @@ class DTPrimitive : {
     int layerId;      // Identificador de la capa del canal
     int channelId;    // Identificador del canal en la capa
 
-    int timeCorrection;   // Correción temporal por electronica, etc...
+    int timeCorrection;   // Correccion temporal por electronica, etc...
     int tdcTimeStamp;     // Tiempo medido por el TDC
     int orbit;            // Número de órbita
     double hitTag[PAYLOAD_ENTRIES];

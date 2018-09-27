@@ -11,5 +11,4 @@
 typedef enum {NOPATH = 0, LOWQGHOST, LOWQ, HIGHQGHOST, HIGHQ} MP_QUALITY;
 // Tipos de lateralidad de traza de partícula al pasar por una celda
 typedef enum {LEFT = 0, RIGHT} LATERAL_CASES;
-}
 #endif
