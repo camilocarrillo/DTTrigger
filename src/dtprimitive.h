@@ -1,23 +1,3 @@
-/**
- * Project:
- * Subproject: tracrecons
- * File name:  dtprimitive.h
- * Language:   C++
- *
- * *********************************************************************
- * Description:
- *
- *
- * To Do:
- *
- * Author: Jose Manuel Cela <josemanuel.cela@ciemat.es>
- *
- * *********************************************************************
- * Copyright (c) 2015-02-05 Jose Manuel Cela <josemanuel.cela@ciemat.es>
- *
- * For internal use, all rights reserved.
- * *********************************************************************
- */
 #ifndef DTPRIMITIVE_H
 #define DTPRIMITIVE_H
 /*
@@ -32,14 +12,9 @@
 #define TDC_TIME_COARSE_MASK 0xFFFFFFE0
 #define TDC_TIME_FINE_MASK   0x1F
 
-//#include "i_object.h"
 #include "constants.h"
 
-using namespace CIEMAT;
-
-namespace CMS {
-
-class DTPrimitive : public I_Object {
+class DTPrimitive : {
 
   public:
     DTPrimitive();
@@ -97,7 +72,5 @@ class DTPrimitive : public I_Object {
     int orbit;            // Número de órbita
     double hitTag[PAYLOAD_ENTRIES];
 };
-
-}
 
 #endif
