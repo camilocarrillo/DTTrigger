@@ -11,6 +11,7 @@
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTChambThContainer.h"
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTChambThDigi.h"
 #include "Geometry/DTGeometry/interface/DTLayer.h"
+#include <DataFormats/DTRecHit/interface/DTRecSegment4DCollection.h>
 #include <iostream>
 #include "TFile.h"
 #include "TH1F.h"
@@ -127,8 +128,18 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
   iEvent.getByLabel(digiLabel_, dtdigis);
   
   int numPrimsPerLayer[4] = {0, 0, 0, 0};
+  int savedTime[4] = {0, 0, 0, 0};
+  int savedWire[4] = {0, 0, 0, 0};
 
+  /*
+  DTPrimitive DTPrimitiveForLayer1;
+  DTPrimitive DTPrimitiveForLayer2;
+  DTPrimitive DTPrimitiveForLayer3;
+  DTPrimitive DTPrimitiveForLayer4;
+
+  //data es un vector de dimension variable en dond cada entrada es un hit de la superlayer dada!
   vector<DTPrimitive*> data[4];
+  */
   
   DTDigiCollection::DigiRangeIterator dtLayerId_It;
   for (dtLayerId_It=dtdigis->begin(); dtLayerId_It!=dtdigis->end(); ++dtLayerId_It){
@@ -148,16 +159,16 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	  
 	  allTDChisto->Fill(digiTDC);
 	  allTDCPhase2histo->Fill(digiTDCPhase2);
-
+	  
 	  allTIMEhisto->Fill(digiTIME);
 	  allTIMEPhase2histo->Fill(digiTIMEPhase2);
-
+	  
 	  //only same superlayer as CIEMAT study
 	  if(dtLId.wheel()==0 && dtLId.sector()==6 && dtLId.station()==1 && (superlayer==1 || superlayer==3)){
-
+	      
 	      wh0_se6_st1_sl1or3_TDChisto->Fill(digiTDC); 
 	      wh0_se6_st1_sl1or3_TDCPhase2histo->Fill(digiTDCPhase2);  
-
+	      
 	      wh0_se6_st1_sl1or3_TIMEhisto->Fill(digiTIME); 
 	      wh0_se6_st1_sl1or3_TIMEPhase2histo->Fill(digiTIMEPhase2);  
 
@@ -167,12 +178,10 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	      if(superlayer==1){
 		  wh0_se6_st1_sl1_TDChisto->Fill(digiTDC);wh0_se6_st1_sl1_TDCPhase2histo->Fill(digiTDCPhase2);
 		  wh0_se6_st1_sl1_TIMEhisto->Fill(digiTIME);wh0_se6_st1_sl1_TIMEPhase2histo->Fill(digiTIMEPhase2);
+		  
 		  numPrimsPerLayer[layer-1]++;
-		  data[layer-1];
-		  data[layer-1].setTDCTime(digiTIMEPhase2);
-		  data[layer-1].setChannelId(wire);
-		  data[layer-1].setLayerId(layer-1);
-		  data[layer-1].setSuperLayerId(superlayer);
+		  savedTime[layer-1]=digiTIMEPhase2;
+		  savedWire[layer-1]=wire;
 	      }
 	      if(superlayer==3){
 		  wh0_se6_st1_sl3_TDChisto->Fill(digiTDC);wh0_se6_st1_sl3_TDCPhase2histo->Fill(digiTDCPhase2);
@@ -183,11 +192,25 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
       }
   }
 
-  std::cout<<" for this event we have:"<<
+  std::cout<<" for this event we have:"
 	   <<" layer 1:"<<numPrimsPerLayer[0]
 	   <<" layer 2:"<<numPrimsPerLayer[1]
 	   <<" layer 3:"<<numPrimsPerLayer[2]
 	   <<" layer 4:"<<numPrimsPerLayer[3]
+	   <<std::endl;
+
+  std::cout<<" for this event we have:"
+	   <<" layer 1:"<<savedTime[0]
+	   <<" layer 2:"<<savedTime[1]
+	   <<" layer 3:"<<savedTime[2]
+	   <<" layer 4:"<<savedTime[3]
+	   <<std::endl;
+
+  std::cout<<" for this event we have:"
+	   <<" layer 1:"<<savedWire[0]
+	   <<" layer 2:"<<savedWire[1]
+	   <<" layer 3:"<<savedWire[2]
+	   <<" layer 4:"<<savedWire[3]
 	   <<std::endl;
 
   bool perfect_segment_event=true;
@@ -195,13 +218,21 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
       if(numPrimsPerLayer[i]!=1)
 	  perfect_segment_event=false;
   
+  DTPrimitive *ptrPrimitive[4];
+  
   if(perfect_segment_event){
+      std::cout<<"we found a perfect event"<<std::endl;
+  
       for (int i = 0; i <= 3; i++) {
-	  ptrPrimitive[i] = new DTPrimitive(data[i]);
+	  ptrPrimitive[i] = new DTPrimitive();
+	  ptrPrimitive[i]->setTDCTime(savedTime[i]); 
+	  ptrPrimitive[i]->setChannelId(savedWire[i]);	    
+	  ptrPrimitive[i]->setLayerId(i);	    
 	  std::cout<<"Capa: "<<ptrPrimitive[i]->getLayerId()<<" Canal: "<<ptrPrimitive[i]->getChannelId()<<" TDCTime: "<<ptrPrimitive[i]->getTDCTime()<<std::endl;
       }
+
       MuonPath *ptrMuonPath = new MuonPath(ptrPrimitive);
-      //ptrMuonPath->setCellHorizontalLayout(horizLayout);//Supongo que esto no lo necesitamos!
+      //ptrMuonPath->setCellHorizontalLayout(horizLayout);//Supongo que esto no lo necesitamos!?
 
       if (ptrMuonPath->isAnalyzable() && ptrMuonPath->completeMP()){
 	  std::cout<<"'MuonPath' analyzable. TDC Time's: "
@@ -210,12 +241,15 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 		   <<ptrMuonPath->getPrimitive(2)->getTDCTime()<<" "
 		   <<ptrMuonPath->getPrimitive(3)->getTDCTime()<<std::endl;
 
-	  std::cout<<"Horizontal Position:"ptrMuonPath->getHorizPos()<<" tan(phi):"<<ptrMuonPath->getTanPhi()<<" BX:"<<<<std::endl;
+	  std::cout<<"Horizontal Position:"<<ptrMuonPath->getHorizPos()<<" tan(phi):"<<ptrMuonPath->getTanPhi()<<" BX:"<<std::endl;
 	  
 	  delete ptrMuonPath;
       }
+
   }    
+
   
+  /*
   for (int layer = 0; layer <= 3; layer++) {
       int numData = data[layer].size();
       for (int i = 0; i < numData; i++) {
@@ -225,7 +259,7 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
   }
 
 
-  
+  */
   
 
   
