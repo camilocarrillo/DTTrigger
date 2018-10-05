@@ -230,6 +230,28 @@ void make_up(){
   Ca1->SaveAs("wirevslayerzTDC.png");
   Ca1->Clear(); Ca1->Clear();
 
+
+  //4D segments
+  TH1F * wh0_se6_st1_segment_x;
+  wh0_se6_st1_segment_x  = (TH1F*) (theFile->Get("wh0_se6_st1_segment_x"));
+  wh0_se6_st1_segment_x->SetXTitle("4D segment x position (cm)");
+  wh0_se6_st1_segment_x->SetYTitle("counts");
+  wh0_se6_st1_segment_x->SetTitle("4D segment x position (cm)");
+  wh0_se6_st1_segment_x->SetFillColor(kBlack);
+  wh0_se6_st1_segment_x->Draw();
+  Ca1->SaveAs("wh0_se6_st1_segment_x.png");
+  Ca1->Clear(); Ca1->Clear();
+
+  TH1F * wh0_se6_st1_segment_tanPhi;
+  wh0_se6_st1_segment_tanPhi  = (TH1F*) (theFile->Get("wh0_se6_st1_segment_tanPhi"));
+  wh0_se6_st1_segment_tanPhi->SetXTitle("4D segment tan(#phi)");
+  wh0_se6_st1_segment_tanPhi->SetYTitle("counts");
+  wh0_se6_st1_segment_tanPhi->SetTitle("4D segment tan(#phi) (radians)");
+  wh0_se6_st1_segment_tanPhi->SetFillColor(kBlack);
+  wh0_se6_st1_segment_tanPhi->Draw();
+  Ca1->SaveAs("wh0_se6_st1_segment_tanPhi.png");
+  Ca1->Clear(); Ca1->Clear();
+
   exit(0);
 
 }

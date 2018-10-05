@@ -6,6 +6,7 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "L1Trigger/DTTrigger/interface/DTTrig.h"
+#include "DataFormats/DTRecHit/interface/DTRecSegment4DCollection.h"
 #include "TFile.h"
 #include "TH1F.h"
 #include "TH2F.h"
@@ -50,6 +51,9 @@ public:
   TH1F * wh0_se6_st1_sl1_TIMEPhase2histo;
   TH1F * wh0_se6_st1_sl3_TIMEPhase2histo;
 
+  TH1F * wh0_se6_st1_segment_x;
+  TH1F * wh0_se6_st1_segment_tanPhi;
+
   TH2F * wirevslayer;
   TH2F * wirevslayerzTDC;
   
@@ -78,6 +82,7 @@ private:
   // ParameterSet
   edm::ParameterSet my_params;
   edm::InputTag digiLabel_;
+  edm::EDGetTokenT<DTRecSegment4DCollection> dt4DSegments;
 
 };
  
