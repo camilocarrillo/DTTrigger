@@ -18,71 +18,73 @@ class DTTrigPhase2Prod: public edm::EDProducer{
 public:
 
   //! Constructor
-  DTTrigPhase2Prod(const edm::ParameterSet& pset);
-
-  //! Destructor
-  ~DTTrigPhase2Prod() override;
-
-  //! Create Trigger Units before starting event processing
-  //void beginJob(const edm::EventSetup & iEventSetup);
-  void beginRun(edm::Run const& iRun, const edm::EventSetup& iEventSetup) override;
+    DTTrigPhase2Prod(const edm::ParameterSet& pset);
+    
+    //! Destructor
+    ~DTTrigPhase2Prod() override;
+    
+    //! Create Trigger Units before starting event processing
+    //void beginJob(const edm::EventSetup & iEventSetup);
+    void beginRun(edm::Run const& iRun, const edm::EventSetup& iEventSetup) override;
   
-  //! Producer: process every event and generates trigger data
-  void produce(edm::Event & iEvent, const edm::EventSetup& iEventSetup) override;
+    //! Producer: process every event and generates trigger data
+    void produce(edm::Event & iEvent, const edm::EventSetup& iEventSetup) override;
+    
+    //plots
+    TFile * theFileOut;
+    
+    TH1F * allTDChisto;
+    TH1F * wh0_se6_st1_sl1or3_TDChisto;
+    TH1F * wh0_se6_st1_sl1_TDChisto;
+    TH1F * wh0_se6_st1_sl3_TDChisto;
+    TH1F * allTDCPhase2histo;
+    TH1F * wh0_se6_st1_sl1or3_TDCPhase2histo;
+    TH1F * wh0_se6_st1_sl1_TDCPhase2histo;
+    TH1F * wh0_se6_st1_sl3_TDCPhase2histo;
+    
+    TH1F * allTIMEhisto;
+    TH1F * wh0_se6_st1_sl1or3_TIMEhisto;
+    TH1F * wh0_se6_st1_sl1_TIMEhisto;
+    TH1F * wh0_se6_st1_sl3_TIMEhisto;
+    TH1F * allTIMEPhase2histo;
+    TH1F * wh0_se6_st1_sl1or3_TIMEPhase2histo;
+    TH1F * wh0_se6_st1_sl1_TIMEPhase2histo;
+    TH1F * wh0_se6_st1_sl3_TIMEPhase2histo;
 
-  //plots
-  TFile * theFileOut;
+    TH1F * wh0_se6_st1_segment_x;
+    TH1F * wh0_se6_st1_segment_tanPhi;
 
-  TH1F * allTDChisto;
-  TH1F * wh0_se6_st1_sl1or3_TDChisto;
-  TH1F * wh0_se6_st1_sl1_TDChisto;
-  TH1F * wh0_se6_st1_sl3_TDChisto;
-  TH1F * allTDCPhase2histo;
-  TH1F * wh0_se6_st1_sl1or3_TDCPhase2histo;
-  TH1F * wh0_se6_st1_sl1_TDCPhase2histo;
-  TH1F * wh0_se6_st1_sl3_TDCPhase2histo;
+    TH2F * wh0_se6_st1_segment_vs_jm_x;
+    TH2F * wh0_se6_st1_segment_vs_jm_tanPhi;
 
-  TH1F * allTIMEhisto;
-  TH1F * wh0_se6_st1_sl1or3_TIMEhisto;
-  TH1F * wh0_se6_st1_sl1_TIMEhisto;
-  TH1F * wh0_se6_st1_sl3_TIMEhisto;
-  TH1F * allTIMEPhase2histo;
-  TH1F * wh0_se6_st1_sl1or3_TIMEPhase2histo;
-  TH1F * wh0_se6_st1_sl1_TIMEPhase2histo;
-  TH1F * wh0_se6_st1_sl3_TIMEPhase2histo;
+    TH2F * wirevslayer;
+    TH2F * wirevslayerzTDC;
 
-  TH1F * wh0_se6_st1_segment_x;
-  TH1F * wh0_se6_st1_segment_tanPhi;
+ private:
 
-  TH2F * wirevslayer;
-  TH2F * wirevslayerzTDC;
-  
+    // Trigger istance
+    DTTrig* my_trig;
 
-private:
+    // Trigger Configuration Manager CCB validity flag
+    bool my_CCBValid;
 
-  // Trigger istance
-  DTTrig* my_trig;
+    // Sector Format Flag true=[0-11] false=[1-12]
+    bool my_DTTFnum;
 
-  // Trigger Configuration Manager CCB validity flag
-  bool my_CCBValid;
+    // BX offset used to correct DTTPG output
+    int my_BXoffset;
 
-  // Sector Format Flag true=[0-11] false=[1-12]
-  bool my_DTTFnum;
+    // Debug Flag
+    bool my_debug;
 
-  // BX offset used to correct DTTPG output
-  int my_BXoffset;
+    // Lut dump file parameters
+    bool my_lut_dump_flag;
+    short int my_lut_btic;
 
-  // Debug Flag
-  bool my_debug;
-
-  // Lut dump file parameters
-  bool my_lut_dump_flag;
-  short int my_lut_btic;
-
-  // ParameterSet
-  edm::ParameterSet my_params;
-  edm::InputTag digiLabel_;
-  edm::EDGetTokenT<DTRecSegment4DCollection> dt4DSegments;
+    // ParameterSet
+    edm::ParameterSet my_params;
+    edm::InputTag digiLabel_;
+    edm::EDGetTokenT<DTRecSegment4DCollection> dt4DSegments;
 
 };
  

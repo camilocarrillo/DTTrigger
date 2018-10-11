@@ -17,12 +17,7 @@ void make_up(){
   gStyle->SetPalette(1);
   gStyle->SetPaintTextFormat("2.2f");
   
-  //TFile * theFile = new TFile("/afs/cern.ch/user/c/carrillo/higgs/yy/hlt/CMSSW_5_3_2_patch4/src/genAnalyzer/GenAnalyzer/genAnalyzer.root");
   TFile * theFile = new TFile("../dt_phase2.root");
-  //TFile * theFile = new TFile("HiggsGenHltRecoAnalyzer/test/genAnalyzer.root");
-
-  //system("mkdir tdc");
-  //system("mkdir hlt");
 
   //Phase-1
 
@@ -250,6 +245,27 @@ void make_up(){
   wh0_se6_st1_segment_tanPhi->SetFillColor(kBlack);
   wh0_se6_st1_segment_tanPhi->Draw();
   Ca1->SaveAs("wh0_se6_st1_segment_tanPhi.png");
+  Ca1->Clear(); Ca1->Clear();
+
+
+  //2D correlation JM/4D Segment
+
+  TH2F * wh0_se6_st1_segment_vs_jm_x;
+  wh0_se6_st1_segment_vs_jm_x  = (TH2F*) (theFile->Get("wh0_se6_st1_segment_vs_jm_x"));
+  wh0_se6_st1_segment_vs_jm_x->SetXTitle("segment x position (cm)");
+  wh0_se6_st1_segment_vs_jm_x->SetYTitle("jm algo x position (cm)");
+  wh0_se6_st1_segment_vs_jm_x->SetTitle("4D segment_vs_jm x position (cm)");
+  wh0_se6_st1_segment_vs_jm_x->Draw("colz");
+  Ca1->SaveAs("wh0_se6_st1_segment_vs_jm_x.png");
+  Ca1->Clear(); Ca1->Clear();
+
+  TH2F * wh0_se6_st1_segment_vs_jm_tanPhi;
+  wh0_se6_st1_segment_vs_jm_tanPhi  = (TH2F*) (theFile->Get("wh0_se6_st1_segment_vs_jm_tanPhi"));
+  wh0_se6_st1_segment_vs_jm_tanPhi->SetXTitle("segment tan(#phi)");
+  wh0_se6_st1_segment_vs_jm_tanPhi->SetYTitle("jm algo tan(#phi)");
+  wh0_se6_st1_segment_vs_jm_tanPhi->SetTitle("4D segment_vs_jm tan(#phi)");
+  wh0_se6_st1_segment_vs_jm_tanPhi->Draw("colz");
+  Ca1->SaveAs("wh0_se6_st1_segment_vs_jm_tanPhi.png");
   Ca1->Clear(); Ca1->Clear();
 
   exit(0);

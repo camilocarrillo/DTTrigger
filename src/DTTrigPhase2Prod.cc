@@ -10,6 +10,8 @@
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTChambPhDigi.h"
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTChambThContainer.h"
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTChambThDigi.h"
+#include <Geometry/Records/interface/MuonGeometryRecord.h>
+#include <Geometry/DTGeometry/interface/DTGeometry.h>
 #include "Geometry/DTGeometry/interface/DTLayer.h"
 #include <iostream>
 #include "TFile.h"
@@ -28,22 +30,23 @@ typedef vector<DTSectCollThSegm>  SectCollThetaColl;
 typedef SectCollThetaColl::const_iterator SectCollThetaColl_iterator;
 
 DTTrigPhase2Prod::DTTrigPhase2Prod(const ParameterSet& pset) : my_trig(nullptr) {
-  produces<L1MuDTChambPhContainer>();
-  produces<L1MuDTChambThContainer>();
+    produces<L1MuDTChambPhContainer>();
+    produces<L1MuDTChambThContainer>();
 
-  my_debug = pset.getUntrackedParameter<bool>("debug");
-  my_DTTFnum = pset.getParameter<bool>("DTTFSectorNumbering");
-  my_params = pset;
-
-  my_lut_dump_flag = pset.getUntrackedParameter<bool>("lutDumpFlag");
-  my_lut_btic = pset.getUntrackedParameter<int>("lutBtic");
-  if(!(my_trig)) my_trig = new DTTrig(my_params,consumesCollector());
-  digiLabel_ = pset.getParameter<edm::InputTag>("digiTag");
-  dt4DSegments = consumes<DTRecSegment4DCollection>(pset.getParameter < edm::InputTag > ("dt4DSegments"));
-  
+    my_debug = pset.getUntrackedParameter<bool>("debug");
+    my_DTTFnum = pset.getParameter<bool>("DTTFSectorNumbering");
+    my_params = pset;
+    
+    my_lut_dump_flag = pset.getUntrackedParameter<bool>("lutDumpFlag");
+    my_lut_btic = pset.getUntrackedParameter<int>("lutBtic");
+    if(!(my_trig)) my_trig = new DTTrig(my_params,consumesCollector());
+    digiLabel_ = pset.getParameter<edm::InputTag>("digiTag");
+    dt4DSegments = consumes<DTRecSegment4DCollection>(pset.getParameter < edm::InputTag > ("dt4DSegments"));
+ 
 }
 
 DTTrigPhase2Prod::~DTTrigPhase2Prod(){
+
     std::cout<<"writing histograms and files"<<std::endl;
     theFileOut->cd();
 
@@ -70,6 +73,9 @@ DTTrigPhase2Prod::~DTTrigPhase2Prod(){
     wh0_se6_st1_segment_x->Write();
     wh0_se6_st1_segment_tanPhi->Write();
 
+    wh0_se6_st1_segment_vs_jm_x->Write();
+    wh0_se6_st1_segment_vs_jm_tanPhi->Write();
+
     wirevslayer->Write();
     wirevslayerzTDC->Write();
 
@@ -80,52 +86,53 @@ DTTrigPhase2Prod::~DTTrigPhase2Prod(){
 }
 
 void DTTrigPhase2Prod::beginRun(edm::Run const& iRun, const edm::EventSetup& iEventSetup) {
-
-  if(my_debug)
-    cout << "DTTrigPhase2Prod::beginRun  " << iRun.id().run() << endl;
-  
-  ESHandle< DTConfigManager > dtConfig ;
-  iEventSetup.get< DTConfigManagerRcd >().get( dtConfig ) ;
-
-  my_trig->createTUs(iEventSetup);
-  if (my_debug)
-      cout << "[DTTrigPhase2Prod] TU's Created" << endl;
+    if(my_debug)
+	cout << "DTTrigPhase2Prod::beginRun  " << iRun.id().run() << endl;
     
-  if(my_lut_dump_flag) {
-      cout << "Dumping luts...." << endl;
-      my_trig->dumpLuts(my_lut_btic, dtConfig.product());
-  }	
-
-  
-
-  theFileOut = new TFile("dt_phase2.root", "RECREATE");
-
-  //TDC
-  allTDChisto = new TH1F("allTDChisto","allTDChisto",1601,-0.5,1600.5);
-  wh0_se6_st1_sl1or3_TDChisto = new TH1F("wh0_se6_st1_sl1or3_TDChisto","wh0_se6_st1_sl1or3_TDChisto",1601,-0.5,1600.5);
-  wh0_se6_st1_sl1_TDChisto = new TH1F("wh0_se6_st1_sl1_TDChisto","wh0_se6_st1_sl1_TDChisto",1601,-0.5,1600.5);
-  wh0_se6_st1_sl3_TDChisto = new TH1F("wh0_se6_st1_sl3_TDChisto","wh0_se6_st1_sl3_TDChisto",1601,-0.5,1600.5);
-  allTDCPhase2histo = new TH1F("allTDCPhase2histo","allTDCPhase2histo",3563*32,-0.5,3563*32+1);
-  wh0_se6_st1_sl1or3_TDCPhase2histo = new TH1F("wh0_se6_st1_sl1or3_TDCPhase2histo","wh0_se6_st1_sl1or3_TDCPhase2histo",3563*32+1,-0.5,3563*32.5);
-  wh0_se6_st1_sl1_TDCPhase2histo = new TH1F("wh0_se6_st1_sl1_TDCPhase2histo","wh0_se6_st1_sl1_TDCPhase2histo",3563*32+1,-0.5,3563*32.5+1);
-  wh0_se6_st1_sl3_TDCPhase2histo = new TH1F("wh0_se6_st1_sl3_TDCPhase2histo","wh0_se6_st1_sl3_TDCPhase2histo",3563*32+1,-0.5,3563*32.5+1);
-  
-  //TIME
-  allTIMEhisto = new TH1F("allTIMEhisto","allTIMEhisto",1275,-0.5,1274.5);
-  wh0_se6_st1_sl1or3_TIMEhisto = new TH1F("wh0_se6_st1_sl1or3_TIMEhisto","wh0_se6_st1_sl1or3_TIMEhisto",1275,-0.5,1274.5);
-  wh0_se6_st1_sl1_TIMEhisto = new TH1F("wh0_se6_st1_sl1_TIMEhisto","wh0_se6_st1_sl1_TIMEhisto",1275,-0.5,1274.5);
-  wh0_se6_st1_sl3_TIMEhisto = new TH1F("wh0_se6_st1_sl3_TIMEhisto","wh0_se6_st1_sl3_TIMEhisto",1275,-0.5,1274.5);
-  allTIMEPhase2histo = new TH1F("allTIMEPhase2histo","allTIMEPhase2histo",89076,-0.5,89075.5);
-  wh0_se6_st1_sl1or3_TIMEPhase2histo = new TH1F("wh0_se6_st1_sl1or3_TIMEPhase2histo","wh0_se6_st1_sl1or3_TIMEPhase2histo",89076,-0.5,89075.5);
-  wh0_se6_st1_sl1_TIMEPhase2histo = new TH1F("wh0_se6_st1_sl1_TIMEPhase2histo","wh0_se6_st1_sl1_TIMEPhase2histo",89076,-0.5,89075.5);
-  wh0_se6_st1_sl3_TIMEPhase2histo = new TH1F("wh0_se6_st1_sl3_TIMEPhase2histo","wh0_se6_st1_sl3_TIMEPhase2histo",89076,-0.5,89075.5);
-
-  wh0_se6_st1_segment_x = new TH1F("wh0_se6_st1_segment_x","wh0_se6_st1_segment_x",50,-200,200);
-  wh0_se6_st1_segment_tanPhi = new TH1F("wh0_se6_st1_segment_tanPhi","wh0_se6_st1_segment_tanPhi",50,-1.,1.);
-  
-  wirevslayer     = new TH2F("wirevslayer","wirevslayer",50,0.5,50.5,8,0.5,8.5);
-  wirevslayerzTDC = new TH2F("wirevslayerzTDC","wirevslayerzTDC",50*1600,0.5,50+0.5,8,0.5,8.5);
-
+    ESHandle< DTConfigManager > dtConfig ;
+    iEventSetup.get< DTConfigManagerRcd >().get( dtConfig ) ;
+    
+    my_trig->createTUs(iEventSetup);
+    if (my_debug)
+	cout << "[DTTrigPhase2Prod] TU's Created" << endl;
+    
+    if(my_lut_dump_flag) {
+	cout << "Dumping luts...." << endl;
+	my_trig->dumpLuts(my_lut_btic, dtConfig.product());
+    }	
+    
+    theFileOut = new TFile("dt_phase2.root", "RECREATE");
+    
+    //TDC
+    allTDChisto = new TH1F("allTDChisto","allTDChisto",1601,-0.5,1600.5);
+    wh0_se6_st1_sl1or3_TDChisto = new TH1F("wh0_se6_st1_sl1or3_TDChisto","wh0_se6_st1_sl1or3_TDChisto",1601,-0.5,1600.5);
+    wh0_se6_st1_sl1_TDChisto = new TH1F("wh0_se6_st1_sl1_TDChisto","wh0_se6_st1_sl1_TDChisto",1601,-0.5,1600.5);
+    wh0_se6_st1_sl3_TDChisto = new TH1F("wh0_se6_st1_sl3_TDChisto","wh0_se6_st1_sl3_TDChisto",1601,-0.5,1600.5);
+    allTDCPhase2histo = new TH1F("allTDCPhase2histo","allTDCPhase2histo",3563*32,-0.5,3563*32+1);
+    wh0_se6_st1_sl1or3_TDCPhase2histo = new TH1F("wh0_se6_st1_sl1or3_TDCPhase2histo","wh0_se6_st1_sl1or3_TDCPhase2histo",3563*32+1,-0.5,3563*32.5);
+    wh0_se6_st1_sl1_TDCPhase2histo = new TH1F("wh0_se6_st1_sl1_TDCPhase2histo","wh0_se6_st1_sl1_TDCPhase2histo",3563*32+1,-0.5,3563*32.5+1);
+    wh0_se6_st1_sl3_TDCPhase2histo = new TH1F("wh0_se6_st1_sl3_TDCPhase2histo","wh0_se6_st1_sl3_TDCPhase2histo",3563*32+1,-0.5,3563*32.5+1);
+    
+    //TIME
+    allTIMEhisto = new TH1F("allTIMEhisto","allTIMEhisto",1275,-0.5,1274.5);
+    wh0_se6_st1_sl1or3_TIMEhisto = new TH1F("wh0_se6_st1_sl1or3_TIMEhisto","wh0_se6_st1_sl1or3_TIMEhisto",1275,-0.5,1274.5);
+    wh0_se6_st1_sl1_TIMEhisto = new TH1F("wh0_se6_st1_sl1_TIMEhisto","wh0_se6_st1_sl1_TIMEhisto",1275,-0.5,1274.5);
+    wh0_se6_st1_sl3_TIMEhisto = new TH1F("wh0_se6_st1_sl3_TIMEhisto","wh0_se6_st1_sl3_TIMEhisto",1275,-0.5,1274.5);
+    allTIMEPhase2histo = new TH1F("allTIMEPhase2histo","allTIMEPhase2histo",89076,-0.5,89075.5);
+    wh0_se6_st1_sl1or3_TIMEPhase2histo = new TH1F("wh0_se6_st1_sl1or3_TIMEPhase2histo","wh0_se6_st1_sl1or3_TIMEPhase2histo",89076,-0.5,89075.5);
+    wh0_se6_st1_sl1_TIMEPhase2histo = new TH1F("wh0_se6_st1_sl1_TIMEPhase2histo","wh0_se6_st1_sl1_TIMEPhase2histo",89076,-0.5,89075.5);
+    wh0_se6_st1_sl3_TIMEPhase2histo = new TH1F("wh0_se6_st1_sl3_TIMEPhase2histo","wh0_se6_st1_sl3_TIMEPhase2histo",89076,-0.5,89075.5);
+    
+    //2D
+    wh0_se6_st1_segment_x = new TH1F("wh0_se6_st1_segment_x","wh0_se6_st1_segment_x",100,-100,100);
+    wh0_se6_st1_segment_tanPhi = new TH1F("wh0_se6_st1_segment_tanPhi","wh0_se6_st1_segment_tanPhi",100,-1.,1.);
+    
+    wh0_se6_st1_segment_vs_jm_x = new TH2F("wh0_se6_st1_segment_vs_jm_x","wh0_se6_st1_segment_vs_jm_x",100,-100,100,100,100,100);
+    wh0_se6_st1_segment_vs_jm_tanPhi = new TH2F("wh0_se6_st1_segment_vs_jm_tanPhi","wh0_se6_st1_segment_vs_jm_tanPhi",100,-1.,1.,100,-1.,1.);
+    
+    wirevslayer     = new TH2F("wirevslayer","wirevslayer",50,0.5,50.5,8,0.5,8.5);
+    wirevslayerzTDC = new TH2F("wirevslayerzTDC","wirevslayerzTDC",50*1600,0.5,50+0.5,8,0.5,8.5);
+    
 }
 
 
@@ -142,20 +149,35 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
   std::map<DTChamberId,int> DTSegmentCounter;
  
   DTChamberId ciemat_chamber_ID(0,1,6);  
+
+
+  //this should not be done event by event to move out later
+  edm::ESHandle<DTGeometry> dtGeo;
+  iEventSetup.get<MuonGeometryRecord>().get(dtGeo);  
   
+  const BoundPlane& DTSurface = dtGeo->idToDet(ciemat_chamber_ID)->surface();
+  GlobalPoint GlobalPointExtrapolated = DTSurface.toGlobal(LocalPoint(0,0,0));
+  std::cout<<GlobalPointExtrapolated.x()<<std::endl;
+
   float segment_x=-1;
   float segment_tanPhi=-1;
   //float segment_t0=-1;
   DTRecSegment4DCollection::const_iterator segment;
   for (segment = all4DSegments->begin();segment!=all4DSegments->end(); ++segment){
       DTSegmentCounter[segment->chamberId()]++;
-      if(segment->chamberId()==ciemat_chamber_ID && segment->dimension()==4 && (segment->phiSegment()->recHits()).size()==8){
+      if(segment->chamberId()==ciemat_chamber_ID 
+	 && segment->dimension()==4 && (segment->phiSegment()->recHits()).size()==8 
+	 && segment->hasPhi() && segment->hasZed()){
+	  
 	  //segment_to=segment->t0();
 	  LocalPoint segmentPosition= segment->localPosition();
 	  LocalVector segmentDirection=segment->localDirection();
-	  segment_x=segmentPosition.x(); wh0_se6_st1_segment_x->Fill(segment_x);
+	  segment_x=segmentPosition.x(); 
+	  wh0_se6_st1_segment_x->Fill(segment_x);
+	  
 	  //if(segmentDirection.z()!=0)//a priori it would never happen in this scope
-	  segment_tanPhi=segmentDirection.x()/segmentDirection.z(); wh0_se6_st1_segment_tanPhi->Fill(segment_tanPhi);
+	  segment_tanPhi=segmentDirection.x()/segmentDirection.z(); 
+	  wh0_se6_st1_segment_tanPhi->Fill(segment_tanPhi);
       }
   }
   if(DTSegmentCounter[ciemat_chamber_ID]==1 && segment_tanPhi!=-1){
@@ -176,7 +198,7 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	DTPrimitive DTPrimitiveForLayer3;
 	DTPrimitive DTPrimitiveForLayer4;
 
-	//data es un vector de dimension variable en dond cada entrada es un hit de la superlayer dada!
+	//data es un vector de dimension variable en dond cada entrada es un conjunto de hits de cada superlayer
 	vector<DTPrimitive*> data[4];
       */
   
@@ -260,8 +282,7 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
   
       if(perfect_digi_set){
 	  std::cout<<"we found a perfect event"<<std::endl;
-  
-	  for (int i = 0; i <= 3; i++) {
+  	  for (int i = 0; i <= 3; i++) {
 	      ptrPrimitive[i] = new DTPrimitive();
 	      ptrPrimitive[i]->setTDCTime(savedTime[i]); 
 	      ptrPrimitive[i]->setChannelId(savedWire[i]);	    
@@ -279,6 +300,9 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 		       <<ptrMuonPath->getPrimitive(2)->getTDCTime()<<" "
 		       <<ptrMuonPath->getPrimitive(3)->getTDCTime()<<" "
 		       <<"Horizontal Position:"<<ptrMuonPath->getHorizPos()<<" tan(phi):"<<ptrMuonPath->getTanPhi()<<std::endl;
+	      
+	      wh0_se6_st1_segment_vs_jm_x->Fill(segment_x,ptrMuonPath->getHorizPos());
+	      wh0_se6_st1_segment_vs_jm_tanPhi->Fill(segment_tanPhi,ptrMuonPath->getTanPhi());
 	      
 	      delete ptrMuonPath;
 	  }
