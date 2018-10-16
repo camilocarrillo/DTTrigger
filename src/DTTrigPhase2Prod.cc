@@ -252,21 +252,21 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	  }
       }
 
-      std::cout<<" for this event we have:"
+      std::cout<<" for this event we have (numPrims):"
 	       <<" layer 1:"<<numPrimsPerLayer[0]
 	       <<" layer 2:"<<numPrimsPerLayer[1]
 	       <<" layer 3:"<<numPrimsPerLayer[2]
 	       <<" layer 4:"<<numPrimsPerLayer[3]
 	       <<std::endl;
 
-      std::cout<<" for this event we have:"
+      std::cout<<" for this event we have (savedTime):"
 	       <<" layer 1:"<<savedTime[0]
 	       <<" layer 2:"<<savedTime[1]
 	       <<" layer 3:"<<savedTime[2]
 	       <<" layer 4:"<<savedTime[3]
 	       <<std::endl;
 
-      std::cout<<" for this event we have:"
+      std::cout<<" for this event we have (savedWire):"
 	       <<" layer 1:"<<savedWire[0]
 	       <<" layer 2:"<<savedWire[1]
 	       <<" layer 3:"<<savedWire[2]
@@ -294,12 +294,12 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	  //ptrMuonPath->setCellHorizontalLayout(horizLayout);//Supongo que esto no lo necesitamos!?
 
 	  if (ptrMuonPath->isAnalyzable() && ptrMuonPath->completeMP()){
-	      std::cout<<"'MuonPath' analyzable. TDC Time's: "
+	      std::cout<<"'input: MuonPath' analyzable. TDC Time's: "
 		       <<ptrMuonPath->getPrimitive(0)->getTDCTime()<<" "
 		       <<ptrMuonPath->getPrimitive(1)->getTDCTime()<<" "
 		       <<ptrMuonPath->getPrimitive(2)->getTDCTime()<<" "
 		       <<ptrMuonPath->getPrimitive(3)->getTDCTime()<<" "
-		       <<"Horizontal Position:"<<ptrMuonPath->getHorizPos()<<" tan(phi):"<<ptrMuonPath->getTanPhi()<<std::endl;
+		       <<"output: X="<<ptrMuonPath->getHorizPos()<<" tan(phi)="<<ptrMuonPath->getTanPhi()<<std::endl;
 	      
 	      wh0_se6_st1_segment_vs_jm_x->Fill(segment_x,ptrMuonPath->getHorizPos());
 	      wh0_se6_st1_segment_vs_jm_tanPhi->Fill(segment_tanPhi,ptrMuonPath->getTanPhi());
