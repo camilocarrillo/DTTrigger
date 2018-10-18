@@ -1,13 +1,12 @@
 #ifndef PATHANALYZER_H
 #define PATHANALYZER_H
 
-#include "muonpath.h"
-#include "analtypedefs.h"
+#include "L1Trigger/DTTrigger/src/muonpath.h"
+#include "L1Trigger/DTTrigger/src/analtypedefs.h"
 
 #define MAX_VERT_ARRANG 4
 
-class PathAnalyzer :  {
-
+class PathAnalyzer {
   typedef struct {
     unsigned int mpAnalized;
     unsigned int mpNull;
@@ -39,13 +38,13 @@ class PathAnalyzer :  {
   } LATQ_TYPE;
 
   public:
-    PathAnalyzer(I_Popper &inMuonPath, I_Pusher &outValidMuonPath);
-    virtual ~PathAnalyzer();
-
+  PathAnalyzer(MuonPath &inMuonPath, MuonPath &outValidMuonPath);
+  virtual ~PathAnalyzer();
+    
     void run(void);
     void stop(void);
     void setRRobin(bool rr);
-    void analyze(void);
+    MuonPath analyze(MuonPath *mPath);
     void reset(void);
 
     void setBXTolerance(int t);
@@ -59,11 +58,10 @@ class PathAnalyzer :  {
     const STATISTICS* getStatistics(void);
 
   private:
-    I_Popper &inMuonPath;
-    I_Pusher &outValidMuonPath;
+    MuonPath &inMuonPath;
+    MuonPath &outValidMuonPath;
 
     bool roundRobin;
-    
     float chiSquareThreshold;
 
     /* Combinaciones verticales de 3 celdas sobre las que se va a aplicar el

@@ -1,6 +1,6 @@
-#include "pathanalyzer.h"
-#include "dtprimitive.h"
-#include "muonpath.h"
+#include "L1Trigger/DTTrigger/src/pathanalyzer.h"
+#include "L1Trigger/DTTrigger/src/dtprimitive.h"
+#include <cstring>
 
 /* Para cada combinación de 4 celdas (una por capa) que forman un MuonPath,
 este array almacena cada una de las combinaciones de 3 capas sobre las que
@@ -10,15 +10,13 @@ const int PathAnalyzer::LAYER_ARRANGEMENTS[MAX_VERT_ARRANG][3] = {
   {0, 1, 3}, {0, 2, 3}                        // Grupos salteados
 };
 
-PathAnalyzer::PathAnalyzer(I_Popper &inMuonPath, I_Pusher &outValidMuonPath) :
-    I_Task(),
+PathAnalyzer::PathAnalyzer(MuonPath &inMuonPath, MuonPath &outValidMuonPath) :
     inMuonPath(inMuonPath),
     outValidMuonPath(outValidMuonPath)
 {
     std::cout<<"Creando un 'PathAnalyzer'"<<std::endl;
     bxTolerance = 0;
     minQuality  = LOWQGHOST;
-    setRRobin(false);
     reset();
     
     chiSquareThreshold = 50;
@@ -32,142 +30,62 @@ PathAnalyzer::~PathAnalyzer() {
 //--- Métodos públicos
 //------------------------------------------------------------------
 
-void PathAnalyzer::analyze(void) {
-
-  MuonPath *mPath = NULL;
-
-  if ( (mPath = (MuonPath*) inMuonPath.pop()) != NULL ) {
-    if (mPath->isAnalyzable()) {
-      std::cout<<"---"<<std::endl;
-      std::cout<<"*************************************"<<std::endl;
-      std::cout<<
-        NString("Analizando MuonPath. Capa/canal: ").\
-          nAppend("%i", mPath->getPrimitive(0)->getLayerId()).sAppend("/").\
-          nAppend("%i", mPath->getPrimitive(0)->getChannelId()).sAppend(" ").\
-          nAppend("%i", mPath->getPrimitive(1)->getLayerId()).sAppend("/").\
-          nAppend("%i", mPath->getPrimitive(1)->getChannelId()).sAppend(" ").\
-          nAppend("%i", mPath->getPrimitive(2)->getLayerId()).sAppend("/").\
-          nAppend("%i", mPath->getPrimitive(2)->getChannelId()).sAppend(" ").\
-          nAppend("%i", mPath->getPrimitive(3)->getLayerId()).sAppend("/").\
-          nAppend("%i", mPath->getPrimitive(3)->getChannelId()).sAppend(" "));
-
-      std::cout<<
-        NString("Candidate. TDC Time's: ").\
-          nAppend("%i", mPath->getPrimitive(0)->getTDCTime()).sAppend(" ").\
-          nAppend("%i", mPath->getPrimitive(1)->getTDCTime()).sAppend(" ").\
-          nAppend("%i", mPath->getPrimitive(2)->getTDCTime()).sAppend(" ").\
-          nAppend("%i", mPath->getPrimitive(3)->getTDCTime()).sAppend(" "));
-
-
-      setCellLayout( mPath->getCellHorizontalLayout() );
-      evaluatePathQuality(mPath);
-      stats.mpAnalized++;
-    }
-    else {
-      delete mPath;
-      stats.mpNotAnalized++;
-    }
-  }
-  else stats.mpNull++;
-
-  /* Después del análisis, si la trayectoria no es válida, destruimos el
-     objeto (que debería destruir, a su vez, las primitivas que lo componen)
-     o, en caso contrario, lo enviamos a la fifo de salida de MuonPath's
-     válidos */
-  if ( mPath != NULL ) {
+MuonPath PathAnalyzer::analyze(MuonPath *mPath) {
+    // Clonamos el objeto analizado.
+    MuonPath *mpAux = new MuonPath(mPath);
+    
     if ( mPath->getQuality() >= minQuality ) {
-        std::cout<<NString("MuonPath Valido. Calidad: ").\
-                nAppend("%i", mPath->getQuality()));
+	std::cout<<"MuonPath Valido. Calidad: "<<mPath->getQuality();
+	for (int i = 0; i <= 3; i++){
+	    std::cout<<"Capa: "<<mPath->getPrimitive(i)->getLayerId()<<" Canal: "<<mPath->getPrimitive(i)->getChannelId()<<" TDCTime: "<<mPath->getPrimitive(i)->getTDCTime()<<std::endl;
+	}
+	//Clonamos el objeto tantas veces como lateralidades válidas haya * que tengan el mismo nivel de calidad que el que "evaluatePathQuality"* haya estimado.* Esta precaución es así porque puede haber salido para una combinación de hits dada, por ejemplo una lateralidad de alta calidad y varias * otras de baja. Estas últimas no han de ser enviadas. Así que la * comparación del nivel de la calidad almacenada en el array  "lateralities" con la del "mPath" es obligada.
+ 	for (int i = 0; i < totalNumValLateralities; i++) {
+	    //* Puede ocurrir que un segmento contenga, p. ej., una lat-comb HIGHQ y varias adicionales LOWQ, en cuyo caso sólo hay que enviar aquellas lat-comb cuya calidad sea análoga a la asignada como global. Es decir: si se asigna global HIGHQ o HIGHQGHOST, se envían aquella de calidad parcial HIGHQ; si LOWQ o LOWQGHOST, se envían  las de calidad parcial LOWQ.
+	    if (latQuality[i].valid &&  (((mPath->getQuality() == HIGHQ ||  mPath->getQuality() == HIGHQGHOST) &&  latQuality[i].quality == HIGHQ) 
+					 || ((mPath->getQuality() == LOWQ  || mPath->getQuality() == LOWQGHOST)  && latQuality[i].quality == LOWQ))){
+		mpAux->setBxTimeValue(latQuality[i].bxValue);
+		mpAux->setLateralComb(lateralities[i]);
+		/* 
+		 * Si hay que invalidar algún 'hit en alguna combinación de
+		 * lateralidad concreta, lo eliminamos del 'segmento'.
+		 * 
+		 * De forma chapucera lo hacemos eliminando la primitiva, y 
+		 * reemplazándola por una nueva vacía (se crean inválidas).
+		 */
+		int idxHitNotValid = latQuality[i].invalidateHitIdx;
+		if (idxHitNotValid >= 0) {
+		    delete mpAux->getPrimitive(idxHitNotValid);
+		    mpAux->setPrimitive(new DTPrimitive(), idxHitNotValid);
+		}
 
-        for (int i = 0; i <= 3; i++)
-          std::cout<<
-            NString("Capa: ").\
-                   nAppend("%i", mPath->getPrimitive(i)->getLayerId()).\
-                   sAppend(" Canal: ").\
-                   nAppend("%i", mPath->getPrimitive(i)->getChannelId()).\
-                   sAppend(" TDCTime: ").
-                   nAppend("%i", mPath->getPrimitive(i)->getTDCTime()));
-      /*
-       * Clonamos el objeto tantas veces como lateralidades válidas haya 
-       * que tengan el mismo nivel de calidad que el que "evaluatePathQuality"
-       * haya estimado.
-       * Esta precaución es así porque puede haber salido para una combinación
-       * de hits dada, por ejemplo una lateralidad de alta calidad y varias 
-       * otras de baja. Estas últimas no han de ser enviadas. Así que la 
-       * comparación del nivel de la calidad almacenada en el array 
-       * "lateralities" con la del "mPath" es obligada.
-       */
-      for (int i = 0; i < totalNumValLateralities; i++) {
-        /*
-         * Puede ocurrir que un segmento contenga, p. ej., una lat-comb 
-         * HIGHQ y varias adicionales LOWQ, en cuyo caso sólo hay que enviar
-         * aquellas lat-comb cuya calidad sea análoga a la asignada como
-         * global. Es decir: si se asigna global HIGHQ o HIGHQGHOST, se envían
-         * aquella de calidad parcial HIGHQ; si LOWQ o LOWQGHOST, se envían 
-         * las de calidad parcial LOWQ.
-         */
-        if (latQuality[i].valid && 
-            (
-              ((mPath->getQuality() == HIGHQ || 
-                mPath->getQuality() == HIGHQGHOST) && 
-                latQuality[i].quality == HIGHQ)             ||
-              ((mPath->getQuality() == LOWQ  ||
-                mPath->getQuality() == LOWQGHOST)  && 
-                latQuality[i].quality == LOWQ)
-            )
-        )
-        {
-          // Clonamos el objeto analizado.
-          MuonPath *mpAux = new MuonPath(mPath);
-          mpAux->setBxTimeValue(latQuality[i].bxValue);
-          mpAux->setLateralComb(lateralities[i]);
-          /* 
-           * Si hay que invalidar algún 'hit en alguna combinación de
-           * lateralidad concreta, lo eliminamos del 'segmento'.
-           * 
-           * De forma chapucera lo hacemos eliminando la primitiva, y 
-           * reemplazándola por una nueva vacía (se crean inválidas).
-           */
-          int idxHitNotValid = latQuality[i].invalidateHitIdx;
-          if (idxHitNotValid >= 0) {
-            delete mpAux->getPrimitive(idxHitNotValid);
-            mpAux->setPrimitive(new DTPrimitive(), idxHitNotValid);
-          }
+		calculatePathParameters(mpAux);
+		/* 
+		 * Si, tras calcular los parámetros, y si se trata de un segmento
+		 * con 4 hits, el chi2 resultante es superior al umbral programado,
+		 * lo eliminamos y no se envía al exterior.
+		 * Y pasamos al siguiente elemento.
+		 */
+		if ((mpAux->getQuality() == HIGHQ || mpAux->getQuality() == HIGHQGHOST) 
+		    && mpAux->getChiSq() > chiSquareThreshold) {
+		    delete mpAux;
+		}
+		else {
+		    std::cout<<"BX Time = "<<mpAux->getBxTimeValue()<<std::endl;
+		    std::cout<<"BX Id   = "<<mpAux->getBxNumId()<<std::endl;
+		    std::cout<<"XCoor   = "<<mpAux->getHorizPos()<<std::endl;
+		    std::cout<<"tan(Phi)= "<<mpAux->getTanPhi()<<std::endl;
 
-          calculatePathParameters(mpAux);
-          /* 
-           * Si, tras calcular los parámetros, y si se trata de un segmento
-           * con 4 hits, el chi2 resultante es superior al umbral programado,
-           * lo eliminamos y no se envía al exterior.
-           * Y pasamos al siguiente elemento.
-           */
-          if ((mpAux->getQuality() == HIGHQ || 
-               mpAux->getQuality() == HIGHQGHOST) && 
-               mpAux->getChiSq() > chiSquareThreshold) {
-            delete mpAux;
-          }
-          else {
-	      std::cout<<"BX Time = "<<mpAux->getBxTimeValue()<<std::endl;
-	      std::cout<<"BX Id   = "<<mpAux->getBxNumId()<<std::endl;
-	      std::cout<<"XCoor   = "<<mpAux->getHorizPos()<<std::endl;
-	      std::cout<<"tan(Phi)= "<<mpAux->getTanPhi()<<std::endl;
-
-            outValidMuonPath.push(mpAux);
-            stats.mpWithValidPath++;
-          }
-        }
-      }
-      /*
-       * En esta nueva versión enviamos copias, así que borramos
-       * el objeto original.
-       */
-      delete mPath;
+		    stats.mpWithValidPath++;
+		    return mpAux;
+		}
+	    }
+	}
     }
     else {
-      delete mPath;
-      stats.mpNoValidPath++;
+	stats.mpNoValidPath++;
     }
-  }
+    return mpAux;
 }
 
 void PathAnalyzer::reset(void) {
@@ -205,11 +123,11 @@ const PathAnalyzer::STATISTICS* PathAnalyzer::getStatistics(void) {
 //--- Métodos privados
 //------------------------------------------------------------------
 void PathAnalyzer::setCellLayout(const int layout[4]) {
-    //memcpy(cellLayout, layout, 4 * sizeof(int));
-    celllayout[0]=layout[0];
-    celllayout[1]=layout[1];
-    celllayout[2]=layout[2];
-    celllayout[3]=layout[3];
+    memcpy(cellLayout, layout, 4 * sizeof(int));
+    //celllayout[0]=layout[0];
+    //celllayout[1]=layout[1];
+    //celllayout[2]=layout[2];
+    //celllayout[3]=layout[3];
     
   buildLateralities();
 }
@@ -241,11 +159,7 @@ void PathAnalyzer::buildLateralities(void) {
           /* Si una combinación de lateralidades es válida, la almacenamos */
           if (isStraightPath(sideComb)) {
             validCase = lateralities + totalNumValLateralities;
-            //memcpy(validCase, sideComb, 4 * sizeof(LATERAL_CASES));
-	    validCase[0]=sideComb[0];
-	    validCase[1]=sideComb[1];
-	    validCase[2]=sideComb[2];
-	    validCase[3]=sideComb[3];
+            memcpy(validCase, sideComb, 4 * sizeof(LATERAL_CASES));
 
             latQuality[totalNumValLateralities].valid            = false;
             latQuality[totalNumValLateralities].bxValue          = 0;
@@ -315,24 +229,22 @@ void PathAnalyzer::evaluatePathQuality(MuonPath *mPath) {
      Posiblemente en la FPGA, si esto se paraleliza, no sea necesaria tal
      optimización */
   for (int latIdx = 0; latIdx < totalNumValLateralities; latIdx++) {
-    std::cout<<
-      NString("\n**********\n**** Analizando combinacion de lateralidad: ").\
-        nAppend("%i", lateralities[latIdx][0]).sAppend("/").\
-        nAppend("%i", lateralities[latIdx][1]).sAppend("/").\
-        nAppend("%i", lateralities[latIdx][2]).sAppend("/").\
-        nAppend("%i", lateralities[latIdx][3]).sAppend(".").\
-        sAppend("\n**********"));
+      std::cout<<"\n**********\n**** Analizando combinacion de lateralidad: "
+	       <<lateralities[latIdx][0]<<"/"
+	       <<lateralities[latIdx][1]<<"/"	 
+	       <<lateralities[latIdx][2]<<"/"
+	       <<lateralities[latIdx][3]<<std::endl;
+	  
+	  evaluateLateralQuality(latIdx, mPath, &(latQuality[latIdx]));
 
-    evaluateLateralQuality(latIdx, mPath, &(latQuality[latIdx]));
-
-    if (latQuality[latIdx].quality == HIGHQ) {
-      totalHighQ++;
-      std::cout<<"Lateralidad HIGHQ"<<std::endl;
-    }
-    if (latQuality[latIdx].quality == LOWQ) {
-      totalLowQ++;
-      std::cout<<"Lateralidad LOWQ"<<std::endl;
-    }
+      if (latQuality[latIdx].quality == HIGHQ) {
+	  totalHighQ++;
+	  std::cout<<"Lateralidad HIGHQ"<<std::endl;
+      }
+      if (latQuality[latIdx].quality == LOWQ) {
+	  totalLowQ++;
+	  std::cout<<"Lateralidad LOWQ"<<std::endl;
+      }
   }
   /*
    * Establecimiento de la calidad.
@@ -380,11 +292,8 @@ void PathAnalyzer::evaluateLateralQuality(int latIdx, MuonPath *mPath,
      construimos un código que analiza las 4 combinaciones, junto con una
      lógica adicional para discriminar la calidad final de la traza */
   for (int i = 0; i <= 3 ; i++) {
-      //memcpy(layerGroup, LAYER_ARRANGEMENTS[i], 3 * sizeof(int));
-      layerGroup[0]=LAYER_ARRANGEMENTS[i][0];
-      layerGroup[1]=LAYER_ARRANGEMENTS[i][1];
-      layerGroup[2]=LAYER_ARRANGEMENTS[i][2];
-      
+      memcpy(layerGroup, LAYER_ARRANGEMENTS[i], 3 * sizeof(int));
+
     // Seleccionamos la combinación de lateralidad para cada celda.
     for (int j = 0; j < 3; j++)
       sideComb[j] = lateralities[latIdx][ layerGroup[j] ];
@@ -547,14 +456,10 @@ void PathAnalyzer::validate(LATERAL_CASES sideComb[3], int layerIndex[3],
      lateralidad de la celda inferior, jugando con aritmética de punteros
      extraemos las combinaciones de lateralidad para los pares SM y MI */
 
-  //memcpy(smSides, &sideComb[1], 2 * sizeof(LATERAL_CASES));
-  smSides[0]=sideComb[1][0];
-  smSides[1]=sideComb[1][1];
-
-  //memcpy(miSides, &sideComb[0], 2 * sizeof(LATERAL_CASES));
-  miSides[0]=sideComb[0];
-  miSides[1]=sideComb[1];
-
+  memcpy(smSides, &sideComb[1], 2 * sizeof(LATERAL_CASES));
+  
+  memcpy(miSides, &sideComb[0], 2 * sizeof(LATERAL_CASES));
+  
   float bxValue = 0;
   int coefsAB[2] = {0, 0}, coefsCD[2] = {0, 0};
   /* It's neccesary to be careful with that pointer's indirection. We need to
@@ -651,7 +556,7 @@ int PathAnalyzer::eqMainBXTerm(LATERAL_CASES sideComb[2], int layerIdx[2],
   eqTerm = coefs[0] * mPath->getPrimitive(layerIdx[0])->getTDCTimeNoOffset() +
            coefs[1] * mPath->getPrimitive(layerIdx[1])->getTDCTimeNoOffset();
 
-  std::cout<<"EQTerm(BX): "<<eqTerm)<<std::endl;
+  std::cout<<"EQTerm(BX): "<<eqTerm<<std::endl;
 
   return (eqTerm);
 }
