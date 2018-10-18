@@ -18,7 +18,8 @@
 #include "TH1F.h"
 
 
-#include "muonpath.h"
+#include "L1Trigger/DTTrigger/src/muonpath.h"
+#include "L1Trigger/DTTrigger/src/pathanalyzer.h"
 
 
 using namespace edm;
@@ -28,6 +29,36 @@ typedef vector<DTSectCollPhSegm>  SectCollPhiColl;
 typedef SectCollPhiColl::const_iterator SectCollPhiColl_iterator;
 typedef vector<DTSectCollThSegm>  SectCollThetaColl;
 typedef SectCollThetaColl::const_iterator SectCollThetaColl_iterator;
+
+/*
+  Channels are labeled following next schema:
+    ---------------------------------
+    |   6   |   7   |   8   |   9   |
+    ---------------------------------
+        |   3   |   4   |   5   |
+        -------------------------
+            |   1   |   2   |
+            -----------------
+                |   0   |
+                ---------
+*/
+
+/* Cell's combination, following previous labeling, to obtain every possible  muon's path. Others cells combinations imply non straight paths */
+const int CHANNELS_PATH_ARRANGEMENTS[8][4] = {
+    {0, 1, 3, 6}, {0, 1, 3, 7}, {0, 1, 4, 7}, {0, 1, 4, 8},
+    {0, 2, 4, 7}, {0, 2, 4, 8}, {0, 2, 5, 8}, {0, 2, 5, 9}
+};
+
+/* For each of the previous cell's combinations, this array stores the associated cell's displacement, relative to lower layer cell, measured in semi-cell length units */
+
+const int CELL_HORIZONTAL_LAYOUTS[8][4] = {
+    {0, -1, -2, -3}, {0, -1, -2, -1}, {0, -1, 0, -1}, {0, -1, 0, 1},
+    {0,  1,  0, -1}, {0,  1,  0,  1}, {0,  1, 2,  1}, {0,  1, 2, 3}
+};
+
+
+
+
 
 DTTrigPhase2Prod::DTTrigPhase2Prod(const ParameterSet& pset) : my_trig(nullptr) {
     produces<L1MuDTChambPhContainer>();
@@ -291,16 +322,17 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	  }
 
 	  MuonPath *ptrMuonPath = new MuonPath(ptrPrimitive);
-	  //ptrMuonPath->setCellHorizontalLayout(horizLayout);//Supongo que esto no lo necesitamos!?
-
+	  
 	  if (ptrMuonPath->isAnalyzable() && ptrMuonPath->completeMP()){
-	      std::cout<<"'input: MuonPath' analyzable. TDC Time's: "
-		       <<ptrMuonPath->getPrimitive(0)->getTDCTime()<<" "
-		       <<ptrMuonPath->getPrimitive(1)->getTDCTime()<<" "
-		       <<ptrMuonPath->getPrimitive(2)->getTDCTime()<<" "
-		       <<ptrMuonPath->getPrimitive(3)->getTDCTime()<<" "
-		       <<"output: X="<<ptrMuonPath->getHorizPos()<<" tan(phi)="<<ptrMuonPath->getTanPhi()<<std::endl;
-	      
+	      std::cout<<"'input: MuonPath' analyzable. TDC Time's: "<<ptrMuonPath->getPrimitive(0)->getTDCTime()<<" "<<ptrMuonPath->getPrimitive(1)->getTDCTime()<<" "<<ptrMuonPath->getPrimitive(2)->getTDCTime()<<" "<<ptrMuonPath->getPrimitive(3)->getTDCTime()<<std::endl;
+
+	      int pathId=3;
+
+	      int horizLayout[4];
+	      memcpy(horizLayout, CELL_HORIZONTAL_LAYOUTS[pathId], 4 * sizeof(int));
+	      ptrMuonPath->setCellHorizontalLayout(horizLayout);
+	      MuonPath theMuonPathOutput(PathAnalyzer::analyze(ptrMuonPath));
+	      std::cout<<"output: X="<<ptrMuonPath->getHorizPos()<<" tan(phi)="<<ptrMuonPath->getTanPhi()<<std::endl;     
 	      wh0_se6_st1_segment_vs_jm_x->Fill(segment_x,ptrMuonPath->getHorizPos());
 	      wh0_se6_st1_segment_vs_jm_tanPhi->Fill(segment_tanPhi,ptrMuonPath->getTanPhi());
 	      

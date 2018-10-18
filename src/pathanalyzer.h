@@ -43,7 +43,6 @@ class PathAnalyzer {
     
     void run(void);
     void stop(void);
-    void setRRobin(bool rr);
     MuonPath analyze(MuonPath *mPath);
     void reset(void);
 
@@ -61,7 +60,6 @@ class PathAnalyzer {
     MuonPath &inMuonPath;
     MuonPath &outValidMuonPath;
 
-    bool roundRobin;
     float chiSquareThreshold;
 
     /* Combinaciones verticales de 3 celdas sobre las que se va a aplicar el
