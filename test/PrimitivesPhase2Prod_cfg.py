@@ -19,7 +19,6 @@ process.dtTriggerPhase2PrimitiveDigis.debug = False
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        'file:/tmp/carrillo/00420561-F145-E711-9694-02163E01A23B.root',
         'file:/tmp/carrillo/008F5CE5-F045-E711-99C2-02163E01A1F0.root',
         'file:/tmp/carrillo/00CD2DAE-A045-E711-9FE6-02163E013611.root',
         'file:/tmp/carrillo/0268ACB3-9845-E711-855E-02163E019CA9.root',
@@ -35,6 +34,7 @@ process.source = cms.Source("PoolSource",
         'file:/tmp/carrillo/264D8070-9045-E711-BB01-02163E01A621.root',
         'file:/tmp/carrillo/2A9B2909-9345-E711-9375-02163E01A777.root',
         'file:/tmp/carrillo/2C201C9D-9945-E711-AEF4-02163E01A6D4.root',
+        'file:/tmp/carrillo/00420561-F145-E711-9694-02163E01A23B.root',
         'file:/tmp/carrillo/2EC23D5F-F345-E711-85B5-02163E0145C5.root'
         )
                             )

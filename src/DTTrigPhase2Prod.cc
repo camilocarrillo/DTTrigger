@@ -16,6 +16,7 @@
 #include <iostream>
 #include "TFile.h"
 #include "TH1F.h"
+#include "TMath.h"
 
 
 #include "L1Trigger/DTTrigger/src/muonpath.h"
@@ -106,9 +107,11 @@ DTTrigPhase2Prod::~DTTrigPhase2Prod(){
 
     wh0_se6_st1_segment_x->Write();
     wh0_se6_st1_segment_tanPhi->Write();
+    wh0_se6_st1_segment_BX->Write();
 
     wh0_se6_st1_segment_vs_jm_x->Write();
     wh0_se6_st1_segment_vs_jm_tanPhi->Write();
+    wh0_se6_st1_segment_vs_jm_BX->Write();
 
     wirevslayer->Write();
     wirevslayerzTDC->Write();
@@ -160,9 +163,11 @@ void DTTrigPhase2Prod::beginRun(edm::Run const& iRun, const edm::EventSetup& iEv
     //2D
     wh0_se6_st1_segment_x = new TH1F("wh0_se6_st1_segment_x","wh0_se6_st1_segment_x",100,-100,100);
     wh0_se6_st1_segment_tanPhi = new TH1F("wh0_se6_st1_segment_tanPhi","wh0_se6_st1_segment_tanPhi",100,-1.,1.);
+    wh0_se6_st1_segment_BX = new TH1F("wh0_se6_st1_segment_BX","wh0_se6_st1_segment_BX",201,-100,100);
     
     wh0_se6_st1_segment_vs_jm_x = new TH2F("wh0_se6_st1_segment_vs_jm_x","wh0_se6_st1_segment_vs_jm_x",100,-100,100,100,100,100);
     wh0_se6_st1_segment_vs_jm_tanPhi = new TH2F("wh0_se6_st1_segment_vs_jm_tanPhi","wh0_se6_st1_segment_vs_jm_tanPhi",100,-1.,1.,100,-1.,1.);
+    wh0_se6_st1_segment_vs_jm_BX= new TH2F("wh0_se6_st1_segment_vs_jm_BX","wh0_se6_st1_segment_vs_jm_BX",201,-100,100,201,-100,100);
     
     wirevslayer     = new TH2F("wirevslayer","wirevslayer",50,0.5,50.5,8,0.5,8.5);
     wirevslayerzTDC = new TH2F("wirevslayerzTDC","wirevslayerzTDC",50*1600,0.5,50+0.5,8,0.5,8.5);
@@ -189,29 +194,39 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
   edm::ESHandle<DTGeometry> dtGeo;
   iEventSetup.get<MuonGeometryRecord>().get(dtGeo);  
   
-  const BoundPlane& DTSurface = dtGeo->idToDet(ciemat_chamber_ID)->surface();
-  GlobalPoint GlobalPointExtrapolated = DTSurface.toGlobal(LocalPoint(0,0,0));
-  std::cout<<GlobalPointExtrapolated.x()<<std::endl;
-
+  //const BoundPlane& DTSurface = dtGeo->idToDet(ciemat_chamber_ID)->surface();
+  //GlobalPoint GlobalPointExtrapolated = DTSurface.toGlobal(LocalPoint(0,0,0));
+  //std::cout<<GlobalPointExtrapolated.x()<<std::endl;
+  
   float segment_x=-1;
   float segment_tanPhi=-1;
-  //float segment_t0=-1;
+  float segment_BX=-1;
+  
   DTRecSegment4DCollection::const_iterator segment;
   for (segment = all4DSegments->begin();segment!=all4DSegments->end(); ++segment){
       DTSegmentCounter[segment->chamberId()]++;
-      if(segment->chamberId()==ciemat_chamber_ID 
-	 && segment->dimension()==4 && (segment->phiSegment()->recHits()).size()==8 
+      if(segment->chamberId()==ciemat_chamber_ID  && segment->dimension()==4 && (segment->phiSegment()->recHits()).size()==8 
 	 && segment->hasPhi() && segment->hasZed()){
 	  
-	  //segment_to=segment->t0();
+	  
 	  LocalPoint segmentPosition= segment->localPosition();
 	  LocalVector segmentDirection=segment->localDirection();
+
 	  segment_x=segmentPosition.x(); 
 	  wh0_se6_st1_segment_x->Fill(segment_x);
 	  
 	  //if(segmentDirection.z()!=0)//a priori it would never happen in this scope
-	  segment_tanPhi=segmentDirection.x()/segmentDirection.z(); 
+	  double dx=segmentDirection.x();
+	  // double dy=segmentDirection.basicVector().y(); 
+	  double dz=segmentDirection.z(); 
+	  
+	  segment_tanPhi=dx/sqrt(dx*dx+dz*dz);
+	  
 	  wh0_se6_st1_segment_tanPhi->Fill(segment_tanPhi);
+	  
+	  segment_BX = iEvent.eventAuxiliary().bunchCrossing();//this may need to be corrected by the t0/25ns or something like that!
+
+
       }
   }
   if(DTSegmentCounter[ciemat_chamber_ID]==1 && segment_tanPhi!=-1){
@@ -328,10 +343,11 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	      memcpy(horizLayout, CELL_HORIZONTAL_LAYOUTS[pathId], 4 * sizeof(int));     
 	      ptrMuonPath->setCellHorizontalLayout(horizLayout);      
 	      analyze(ptrMuonPath);	      
-	      std::cout<<"DTp2: jm_output_x="<<ptrMuonPath->getHorizPos()<<"jm_out_tanPhi="<<ptrMuonPath->getTanPhi()<<std::endl;     
+	      std::cout<<"DTp2: jm_output_x="<<ptrMuonPath->getHorizPos()<<"jm_out_tanPhi="<<ptrMuonPath->getTanPhi()<<"jm_out_tanPhi="<<ptrMuonPath->getBxTimeValue()<<std::endl;     
 	      
 	      wh0_se6_st1_segment_vs_jm_x->Fill(segment_x,ptrMuonPath->getHorizPos());
 	      wh0_se6_st1_segment_vs_jm_tanPhi->Fill(segment_tanPhi,ptrMuonPath->getTanPhi());
+	      wh0_se6_st1_segment_vs_jm_BX->Fill(segment_BX,ptrMuonPath->getBxTimeValue());
 	      
 	      delete ptrMuonPath;
 	  }
@@ -844,7 +860,7 @@ void DTTrigPhase2Prod::validate(LATERAL_CASES sideComb[3], int layerIndex[3],Muo
 	return;
     }
 
-    std::cout<<"Valores de TDC: "
+    std::cout<<"DTp2:\t\t\t\t\t Valores de TDC: "
 	     <<mPath->getPrimitive(layerIndex[0])->getTDCTime()<<"/"
 	     <<mPath->getPrimitive(layerIndex[1])->getTDCTime()<<"/"
 	     <<mPath->getPrimitive(layerIndex[2])->getTDCTime()<<"."

@@ -22,7 +22,7 @@ void make_up(){
   //Phase-1
 
   cout<<"creating canvas"<<endl;
-  TCanvas * Ca0 = new TCanvas("Ca0","Ca0",9600,3200);
+  TCanvas * Ca0 = new TCanvas("Ca0","Ca0",1980,1020);
   Ca0->cd();
  
   //TDC
@@ -114,7 +114,7 @@ void make_up(){
 
   //Phase-2
 
-  TCanvas * Ca1 = new TCanvas("Ca1","Ca1",9600,3200);
+  TCanvas * Ca1 = new TCanvas("Ca1","Ca1",1980,1020);
   Ca1->cd();
 
 
@@ -247,6 +247,16 @@ void make_up(){
   Ca1->SaveAs("wh0_se6_st1_segment_tanPhi.png");
   Ca1->Clear(); Ca1->Clear();
 
+  TH1F * wh0_se6_st1_segment_BX;
+  wh0_se6_st1_segment_BX  = (TH1F*) (theFile->Get("wh0_se6_st1_segment_BX"));
+  wh0_se6_st1_segment_BX->SetXTitle("4D segment BX");
+  wh0_se6_st1_segment_BX->SetYTitle("counts");
+  wh0_se6_st1_segment_BX->SetTitle("4D segment BX");
+  wh0_se6_st1_segment_BX->SetFillColor(kBlack);
+  wh0_se6_st1_segment_BX->Draw();
+  Ca1->SaveAs("wh0_se6_st1_segment_BX.png");
+  Ca1->Clear(); Ca1->Clear();
+
 
   //2D correlation JM/4D Segment
 
@@ -266,6 +276,15 @@ void make_up(){
   wh0_se6_st1_segment_vs_jm_tanPhi->SetTitle("4D segment_vs_jm tan(#phi)");
   wh0_se6_st1_segment_vs_jm_tanPhi->Draw("colz");
   Ca1->SaveAs("wh0_se6_st1_segment_vs_jm_tanPhi.png");
+  Ca1->Clear(); Ca1->Clear();
+
+  TH2F * wh0_se6_st1_segment_vs_jm_BX;
+  wh0_se6_st1_segment_vs_jm_BX  = (TH2F*) (theFile->Get("wh0_se6_st1_segment_vs_jm_BX"));
+  wh0_se6_st1_segment_vs_jm_BX->SetXTitle("segment BX");
+  wh0_se6_st1_segment_vs_jm_BX->SetYTitle("jm algo BX");
+  wh0_se6_st1_segment_vs_jm_BX->SetTitle("4D segment_vs_jm BX");
+  wh0_se6_st1_segment_vs_jm_BX->Draw("colz");
+  Ca1->SaveAs("wh0_se6_st1_segment_vs_jm_BX.png");
   Ca1->Clear(); Ca1->Clear();
 
   exit(0);

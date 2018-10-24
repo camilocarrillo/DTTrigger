@@ -78,9 +78,11 @@ class DTTrigPhase2Prod: public edm::EDProducer{
 
     TH1F * wh0_se6_st1_segment_x;
     TH1F * wh0_se6_st1_segment_tanPhi;
+    TH1F * wh0_se6_st1_segment_BX;
 
     TH2F * wh0_se6_st1_segment_vs_jm_x;
     TH2F * wh0_se6_st1_segment_vs_jm_tanPhi;
+    TH2F * wh0_se6_st1_segment_vs_jm_BX;
 
     TH2F * wirevslayer;
     TH2F * wirevslayerzTDC;
