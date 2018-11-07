@@ -155,10 +155,16 @@ void DTTrigPhase2Prod::beginRun(edm::Run const& iRun, const edm::EventSetup& iEv
     wh0_se6_st1_sl1or3_TIMEhisto = new TH1F("wh0_se6_st1_sl1or3_TIMEhisto","wh0_se6_st1_sl1or3_TIMEhisto",1275,-0.5,1274.5);
     wh0_se6_st1_sl1_TIMEhisto = new TH1F("wh0_se6_st1_sl1_TIMEhisto","wh0_se6_st1_sl1_TIMEhisto",1275,-0.5,1274.5);
     wh0_se6_st1_sl3_TIMEhisto = new TH1F("wh0_se6_st1_sl3_TIMEhisto","wh0_se6_st1_sl3_TIMEhisto",1275,-0.5,1274.5);
-    allTIMEPhase2histo = new TH1F("allTIMEPhase2histo","allTIMEPhase2histo",89076,-0.5,89075.5);
-    wh0_se6_st1_sl1or3_TIMEPhase2histo = new TH1F("wh0_se6_st1_sl1or3_TIMEPhase2histo","wh0_se6_st1_sl1or3_TIMEPhase2histo",89076,-0.5,89075.5);
-    wh0_se6_st1_sl1_TIMEPhase2histo = new TH1F("wh0_se6_st1_sl1_TIMEPhase2histo","wh0_se6_st1_sl1_TIMEPhase2histo",89076,-0.5,89075.5);
-    wh0_se6_st1_sl3_TIMEPhase2histo = new TH1F("wh0_se6_st1_sl3_TIMEPhase2histo","wh0_se6_st1_sl3_TIMEPhase2histo",89076,-0.5,89075.5);
+    allTIMEPhase2histo = new TH1F("allTIMEPhase2histo","allTIMEPhase2histo",8907,-0.5,89075.5);
+    wh0_se6_st1_sl1or3_TIMEPhase2histo = new TH1F("wh0_se6_st1_sl1or3_TIMEPhase2histo","wh0_se6_st1_sl1or3_TIMEPhase2histo",8907,-0.5,89075.5);
+    wh0_se6_st1_sl1_TIMEPhase2histo = new TH1F("wh0_se6_st1_sl1_TIMEPhase2histo","wh0_se6_st1_sl1_TIMEPhase2histo",8907,-0.5,89075.5);
+    wh0_se6_st1_sl3_TIMEPhase2histo = new TH1F("wh0_se6_st1_sl3_TIMEPhase2histo","wh0_se6_st1_sl3_TIMEPhase2histo",8907,-0.5,89075.5);
+    
+    //T0
+    //allT0histo = new TH1F("allT0histo","allT0histo",1275,-0.5,1274.5);
+    //wh0_se6_st1_T0histo = new TH1F("wh0_se6_st1_T0histo","wh0_se6_st1_T0histo",1275,-0.5,1274.5);
+    //allT0Phase2histo = new TH1F("allT0Phase2histo","allT0Phase2histo",8907,-0.5,89075.5);
+    //wh0_se6_st1_T0Phase2histo = new TH1F("wh0_se6_st1_sl3_T0Phase2histo","wh0_se6_st1_T0Phase2histo",8907,-0.5,89075.5);
     
     //2D
     wh0_se6_st1_segment_x = new TH1F("wh0_se6_st1_segment_x","wh0_se6_st1_segment_x",100,-100,100);
@@ -168,6 +174,7 @@ void DTTrigPhase2Prod::beginRun(edm::Run const& iRun, const edm::EventSetup& iEv
     wh0_se6_st1_segment_vs_jm_x = new TH2F("wh0_se6_st1_segment_vs_jm_x","wh0_se6_st1_segment_vs_jm_x",100,-100,100,100,100,100);
     wh0_se6_st1_segment_vs_jm_tanPhi = new TH2F("wh0_se6_st1_segment_vs_jm_tanPhi","wh0_se6_st1_segment_vs_jm_tanPhi",100,-1.,1.,100,-1.,1.);
     wh0_se6_st1_segment_vs_jm_BX= new TH2F("wh0_se6_st1_segment_vs_jm_BX","wh0_se6_st1_segment_vs_jm_BX",201,-100,100,201,-100,100);
+    //wh0_se6_st1_segment_vs_jm_T0= new TH2F("wh0_se6_st1_segment_vs_jm_T0","wh0_se6_st1_segment_vs_jm_T0",201,-100,100,201,-100,100);
     
     wirevslayer     = new TH2F("wirevslayer","wirevslayer",50,0.5,50.5,8,0.5,8.5);
     wirevslayerzTDC = new TH2F("wirevslayerzTDC","wirevslayerzTDC",50*1600,0.5,50+0.5,8,0.5,8.5);
@@ -198,35 +205,42 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
   //GlobalPoint GlobalPointExtrapolated = DTSurface.toGlobal(LocalPoint(0,0,0));
   //std::cout<<GlobalPointExtrapolated.x()<<std::endl;
   
-  float segment_x=-1;
-  float segment_tanPhi=-1;
-  float segment_BX=-1;
+  double segment_x=-1;
+  double segment_tanPhi=-1;
+  double segment_BX=-1;
+  
+  //double segment_t0=-1;
+  //double segment_t0Phase2=-1;
   
   DTRecSegment4DCollection::const_iterator segment;
   for (segment = all4DSegments->begin();segment!=all4DSegments->end(); ++segment){
       DTSegmentCounter[segment->chamberId()]++;
-      if(segment->chamberId()==ciemat_chamber_ID  && segment->dimension()==4 && (segment->phiSegment()->recHits()).size()==8 
-	 && segment->hasPhi() && segment->hasZed()){
-	  
-	  
-	  LocalPoint segmentPosition= segment->localPosition();
-	  LocalVector segmentDirection=segment->localDirection();
+      if(segment->hasPhi()){
+	  //segment_t0=segment->phiSegment()->t0();
+	  //segment_t0Phase2=segment_t0+25*iEvent.eventAuxiliary().bunchCrossing()+325;
+	  //allT0histo->Fill(segment_t0);
+	  //allT0Phase2histo->Fill(segment_t0Phase2);
+	  if(segment->chamberId()==ciemat_chamber_ID  && segment->dimension()==4 && (segment->phiSegment()->recHits()).size()==8 && segment->hasZed()){
+	      LocalPoint segmentPosition= segment->localPosition();
+	      LocalVector segmentDirection=segment->localDirection();
 
-	  segment_x=segmentPosition.x(); 
-	  wh0_se6_st1_segment_x->Fill(segment_x);
+	      //if(segmentDirection.z()!=0)//a priori it would never happen in this scope
+	      double dx=segmentDirection.x();
+	      // double dy=segmentDirection.basicVector().y(); 
+	      double dz=segmentDirection.z(); 
 	  
-	  //if(segmentDirection.z()!=0)//a priori it would never happen in this scope
-	  double dx=segmentDirection.x();
-	  // double dy=segmentDirection.basicVector().y(); 
-	  double dz=segmentDirection.z(); 
+	      segment_tanPhi=(-1)*(dx/dz);
+	      wh0_se6_st1_segment_tanPhi->Fill(segment_tanPhi);
 	  
-	  segment_tanPhi=dx/sqrt(dx*dx+dz*dz);
+	      segment_BX = iEvent.eventAuxiliary().bunchCrossing();
 	  
-	  wh0_se6_st1_segment_tanPhi->Fill(segment_tanPhi);
-	  
-	  segment_BX = iEvent.eventAuxiliary().bunchCrossing();//this may need to be corrected by the t0/25ns or something like that!
-
-
+	      segment_x=segmentPosition.x()-11.75*segment_tanPhi; 
+	      wh0_se6_st1_segment_x->Fill(segment_x);
+	      
+	      //wh0_se6_st1_T0histo->Fill(segment_t0);
+	      //wh0_se6_st1_T0Phase2histo->Fill(segment_t0Phase2);	      
+	     
+	  }
       }
   }
   if(DTSegmentCounter[ciemat_chamber_ID]==1 && segment_tanPhi!=-1){
@@ -273,7 +287,7 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 		  wh0_se6_st1_sl1or3_TIMEPhase2histo->Fill(digiTIMEPhase2);  
 
 		  wirevslayer->Fill(wire,(superlayer-1)*2+layer);
-		  wirevslayerzTDC->Fill(wire-0.5+float(digiTDC)/1600.,(superlayer-1)*2+layer);
+		  wirevslayerzTDC->Fill(wire-0.5+double(digiTDC)/1600.,(superlayer-1)*2+layer);
 	  
 		  if(superlayer==1){
 		      wh0_se6_st1_sl1_TDChisto->Fill(digiTDC);wh0_se6_st1_sl1_TDCPhase2histo->Fill(digiTDCPhase2);
@@ -348,11 +362,12 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	      wh0_se6_st1_segment_vs_jm_x->Fill(segment_x,ptrMuonPath->getHorizPos());
 	      wh0_se6_st1_segment_vs_jm_tanPhi->Fill(segment_tanPhi,ptrMuonPath->getTanPhi());
 	      wh0_se6_st1_segment_vs_jm_BX->Fill(segment_BX,ptrMuonPath->getBxTimeValue());
+	      //wh0_se6_st1_segment_vs_jm_T0->Fill(segment_t0Phase2,ptrMuonPath->getBxTimeValue());
 	      
-	      delete ptrMuonPath;
 	  }
-	  
+	  //delete ptrMuonPath;
       } //we have a perfeect digi set   
+      //delete ptrPrimitive;
   } //we have a perfect segment in the interesting chamber
   
   /*
