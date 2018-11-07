@@ -110,6 +110,7 @@ DTTrigPhase2Prod::~DTTrigPhase2Prod(){
     wh0_se6_st1_segment_BX->Write();
 
     wh0_se6_st1_segment_vs_jm_x->Write();
+    wh0_se6_st1_segment_vs_jm_x_gauss->Write();
     wh0_se6_st1_segment_vs_jm_tanPhi->Write();
     wh0_se6_st1_segment_vs_jm_BX->Write();
 
@@ -167,11 +168,13 @@ void DTTrigPhase2Prod::beginRun(edm::Run const& iRun, const edm::EventSetup& iEv
     //wh0_se6_st1_T0Phase2histo = new TH1F("wh0_se6_st1_sl3_T0Phase2histo","wh0_se6_st1_T0Phase2histo",8907,-0.5,89075.5);
     
     //2D
-    wh0_se6_st1_segment_x = new TH1F("wh0_se6_st1_segment_x","wh0_se6_st1_segment_x",100,-100,100);
+    wh0_se6_st1_segment_x = new TH1F("wh0_se6_st1_segment_x","wh0_se6_st1_segment_x",100,-101,101);
     wh0_se6_st1_segment_tanPhi = new TH1F("wh0_se6_st1_segment_tanPhi","wh0_se6_st1_segment_tanPhi",100,-1.,1.);
     wh0_se6_st1_segment_BX = new TH1F("wh0_se6_st1_segment_BX","wh0_se6_st1_segment_BX",201,-100,100);
     
-    wh0_se6_st1_segment_vs_jm_x = new TH2F("wh0_se6_st1_segment_vs_jm_x","wh0_se6_st1_segment_vs_jm_x",100,-100,100,100,100,100);
+    wh0_se6_st1_segment_vs_jm_x = new TH2F("wh0_se6_st1_segment_vs_jm_x","wh0_se6_st1_segment_vs_jm_x",100,-101,101,100,-101,101);
+    wh0_se6_st1_segment_vs_jm_x_gauss = new TH1F("wh0_se6_st1_segment_vs_jm_x_gauss","wh0_se6_st1_segment_vs_jm_x_gauss",1000,-8,8);
+
     wh0_se6_st1_segment_vs_jm_tanPhi = new TH2F("wh0_se6_st1_segment_vs_jm_tanPhi","wh0_se6_st1_segment_vs_jm_tanPhi",100,-1.,1.,100,-1.,1.);
     wh0_se6_st1_segment_vs_jm_BX= new TH2F("wh0_se6_st1_segment_vs_jm_BX","wh0_se6_st1_segment_vs_jm_BX",201,-100,100,201,-100,100);
     //wh0_se6_st1_segment_vs_jm_T0= new TH2F("wh0_se6_st1_segment_vs_jm_T0","wh0_se6_st1_segment_vs_jm_T0",201,-100,100,201,-100,100);
@@ -357,9 +360,13 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	      memcpy(horizLayout, CELL_HORIZONTAL_LAYOUTS[pathId], 4 * sizeof(int));     
 	      ptrMuonPath->setCellHorizontalLayout(horizLayout);      
 	      analyze(ptrMuonPath);	      
-	      std::cout<<"DTp2: jm_output_x="<<ptrMuonPath->getHorizPos()<<"jm_out_tanPhi="<<ptrMuonPath->getTanPhi()<<"jm_out_tanPhi="<<ptrMuonPath->getBxTimeValue()<<std::endl;     
+
+	      double jm_x=(ptrMuonPath->getHorizPos()/10.)-101.3;
+
+	      std::cout<<"DTp2: jm_output_x="<<jm_x<<"jm_out_tanPhi="<<ptrMuonPath->getTanPhi()<<"jm_out_BxTimeValue="<<ptrMuonPath->getBxTimeValue()<<std::endl;     
 	      
-	      wh0_se6_st1_segment_vs_jm_x->Fill(segment_x,ptrMuonPath->getHorizPos());
+	      wh0_se6_st1_segment_vs_jm_x->Fill(segment_x,jm_x);
+	      wh0_se6_st1_segment_vs_jm_x_gauss->Fill(segment_x-jm_x);
 	      wh0_se6_st1_segment_vs_jm_tanPhi->Fill(segment_tanPhi,ptrMuonPath->getTanPhi());
 	      wh0_se6_st1_segment_vs_jm_BX->Fill(segment_BX,ptrMuonPath->getBxTimeValue());
 	      //wh0_se6_st1_segment_vs_jm_T0->Fill(segment_t0Phase2,ptrMuonPath->getBxTimeValue());
