@@ -112,6 +112,21 @@ void make_up(){
       Ca0->Clear();Ca0->Clear();
   }  
 
+  //T0                                                                                                                                                                    
+  {
+      TH1F * allT0histo;
+      allT0histo  = (TH1F*) (theFile->Get("allT0histo"));
+      allT0histo->SetXTitle("segment t0 time (ns)");
+      allT0histo->SetYTitle("ns");
+      allT0histo->SetTitle("segment t0 time phase-1");
+      allT0histo->Draw();
+      allT0histo->SetFillColor(kBlack);
+      Ca0->SaveAs("allT0histo.png");
+      Ca0->Clear();Ca0->Clear();
+
+  }
+
+
   //Phase-2
 
   TCanvas * Ca1 = new TCanvas("Ca1","Ca1",1980,1020);
@@ -206,6 +221,21 @@ void make_up(){
       Ca1->Clear(); Ca1->Clear();
   }
 
+  //T0                                                                                                                                                                  
+  {
+      TH1F * allT0Phase2histo;
+      allT0Phase2histo  = (TH1F*) (theFile->Get("allT0Phase2histo"));
+      allT0Phase2histo->SetXTitle("segment t0 time (ns)");
+      allT0Phase2histo->SetYTitle("ns");
+      allT0Phase2histo->SetTitle("segment t0 time phase-1");
+      allT0Phase2histo->Draw();
+      allT0Phase2histo->SetFillColor(kBlack);
+      Ca1->SaveAs("allT0Phase2histo.png");
+      Ca1->Clear();Ca1->Clear();
+  }
+
+
+
   //2D
   TH2F * wirevslayer;
   wirevslayer  = (TH2F*) (theFile->Get("wirevslayer"));
@@ -247,15 +277,15 @@ void make_up(){
   Ca1->SaveAs("wh0_se6_st1_segment_tanPhi.png");
   Ca1->Clear(); Ca1->Clear();
 
-  TH1F * wh0_se6_st1_segment_BX;
-  wh0_se6_st1_segment_BX  = (TH1F*) (theFile->Get("wh0_se6_st1_segment_BX"));
-  wh0_se6_st1_segment_BX->SetXTitle("4D segment BX");
-  wh0_se6_st1_segment_BX->SetYTitle("counts");
-  wh0_se6_st1_segment_BX->SetTitle("4D segment BX");
-  wh0_se6_st1_segment_BX->SetFillColor(kBlack);
-  wh0_se6_st1_segment_BX->Draw();
-  Ca1->SaveAs("wh0_se6_st1_segment_BX.png");
-  Ca1->Clear(); Ca1->Clear();
+  //TH1F * wh0_se6_st1_segment_BX;
+  //wh0_se6_st1_segment_BX  = (TH1F*) (theFile->Get("wh0_se6_st1_segment_BX"));
+  //wh0_se6_st1_segment_BX->SetXTitle("4D segment BX");
+  //wh0_se6_st1_segment_BX->SetYTitle("counts");
+  //wh0_se6_st1_segment_BX->SetTitle("4D segment BX");
+  //wh0_se6_st1_segment_BX->SetFillColor(kBlack);
+  //wh0_se6_st1_segment_BX->Draw();
+  //Ca1->SaveAs("wh0_se6_st1_segment_BX.png");
+  //Ca1->Clear(); Ca1->Clear();
 
 
   //2D correlation JM/4D Segment
@@ -267,6 +297,15 @@ void make_up(){
   wh0_se6_st1_segment_vs_jm_x->SetTitle("4D segment_vs_jm x position (cm)");
   wh0_se6_st1_segment_vs_jm_x->Draw("colz");
   Ca1->SaveAs("wh0_se6_st1_segment_vs_jm_x.png");
+  Ca1->Clear(); Ca1->Clear();
+
+  TH2F * wh0_se6_st1_segment_vs_jm_T0;
+  wh0_se6_st1_segment_vs_jm_T0  = (TH2F*) (theFile->Get("wh0_se6_st1_segment_vs_jm_T0"));
+  wh0_se6_st1_segment_vs_jm_T0->SetXTitle("segment x position (cm)");
+  wh0_se6_st1_segment_vs_jm_T0->SetYTitle("jm algo x position (cm)");
+  wh0_se6_st1_segment_vs_jm_T0->SetTitle("4D segment_vs_jm x position (cm)");
+  wh0_se6_st1_segment_vs_jm_T0->Draw("colz");
+  Ca1->SaveAs("wh0_se6_st1_segment_vs_jm_T0.png");
   Ca1->Clear(); Ca1->Clear();
 
   TH2F * wh0_se6_st1_segment_vs_jm_tanPhi;
