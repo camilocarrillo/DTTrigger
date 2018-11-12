@@ -2,11 +2,13 @@
 #define L1Trigger_DTTrigger_DTTrigPhase2Prod_cc
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "L1Trigger/DTTrigger/interface/DTTrig.h"
 #include "DataFormats/DTRecHit/interface/DTRecSegment4DCollection.h"
+#include "Geometry/DTGeometry/interface/DTGeometry.h"
 #include "TFile.h"
 #include "TH1F.h"
 #include "TH2F.h"
@@ -54,6 +56,8 @@ class DTTrigPhase2Prod: public edm::EDProducer{
   
     //! Producer: process every event and generates trigger data
     void produce(edm::Event & iEvent, const edm::EventSetup& iEventSetup) override;
+    
+    edm::ESHandle<DTGeometry> dtGeo;
 
     //plots
     TFile * theFileOut;

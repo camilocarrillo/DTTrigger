@@ -82,6 +82,9 @@ DTTrigPhase2Prod::DTTrigPhase2Prod(const ParameterSet& pset) :
 
 DTTrigPhase2Prod::~DTTrigPhase2Prod(){
 
+    //delete inMuonPath;
+    //delete outValidMuonPath;
+
     std::cout<<"DTp2: writing histograms and files"<<std::endl;
     theFileOut->cd();
 
@@ -131,6 +134,9 @@ DTTrigPhase2Prod::~DTTrigPhase2Prod(){
 void DTTrigPhase2Prod::beginRun(edm::Run const& iRun, const edm::EventSetup& iEventSetup) {
     if(my_debug)
 	cout << "DTTrigPhase2Prod::beginRun  " << iRun.id().run() << endl;
+
+    //iEventSetup.get<MuonGeometryRecord>().get(dtGeo);
+
     
     ESHandle< DTConfigManager > dtConfig ;
     iEventSetup.get< DTConfigManagerRcd >().get( dtConfig ) ;
@@ -205,14 +211,6 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
   DTChamberId ciemat_chamber_ID(0,1,6);  
 
 
-  //this should not be done event by event to move out later
-  edm::ESHandle<DTGeometry> dtGeo;
-  iEventSetup.get<MuonGeometryRecord>().get(dtGeo);  
-  
-  //const BoundPlane& DTSurface = dtGeo->idToDet(ciemat_chamber_ID)->surface();
-  //GlobalPoint GlobalPointExtrapolated = DTSurface.toGlobal(LocalPoint(0,0,0));
-  //std::cout<<GlobalPointExtrapolated.x()<<std::endl;
-  
   double segment_x=-1;
   double segment_tanPhi=-1;
   //double segment_BX=-1;
@@ -305,7 +303,7 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 		      wh0_se6_st1_sl1_TIMEhisto->Fill(digiTIME);wh0_se6_st1_sl1_TIMEPhase2histo->Fill(digiTIMEPhase2);
 		      numPrimsPerLayer[layer-1]++;
 		      savedTime[layer-1]=digiTIMEPhase2;
-		      savedWire[layer-1]=wire;
+		      savedWire[layer-1]=wire-1;
 		  }
 		  if(superlayer==3){
 		      wh0_se6_st1_sl3_TDChisto->Fill(digiTDC);wh0_se6_st1_sl3_TDCPhase2histo->Fill(digiTDCPhase2);
@@ -368,6 +366,11 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	      memcpy(horizLayout, CELL_HORIZONTAL_LAYOUTS[pathId], 4 * sizeof(int));     
 	      ptrMuonPath->setCellHorizontalLayout(horizLayout);      
 	      analyze(ptrMuonPath);	      
+
+
+
+	      
+
 
 	      double jm_x=(ptrMuonPath->getHorizPos()/10.)-101.3;
 
@@ -473,9 +476,7 @@ const int DTTrigPhase2Prod::LAYER_ARRANGEMENTS[MAX_VERT_ARRANG][3] = {
 };
 
 /*CONSTRUCTOR NOT PORTED... ONLY THE FUNCTIONS
-PathAnalyzer::PathAnalyzer(MuonPath &inMuonPath, MuonPath &outValidMuonPath) :
-    inMuonPath(inMuonPath),
-    outValidMuonPath(outValidMuonPath)
+PathAnalyzer::PathAnalyzer(MuonPath &inMuonPath, MuonPath &outValidMuonPath) //: inMuonPath(inMuonPath), outValidMuonPath(outValidMuonPath)
 {
     std::cout<<"DTp2: Creando un 'PathAnalyzer'"<<std::endl;
     bxTolerance = 0;

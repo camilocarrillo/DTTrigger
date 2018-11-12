@@ -22,9 +22,9 @@ void gaussianResolution(){
   TH1F * residuals = (TH1F*) (theFile->Get(title.c_str()));
 			      
   residuals->GetXaxis()->SetTitle((title+" (cm)").c_str());
-  residuals->GetXaxis()->SetRangeUser(-4.3,-4);
+  residuals->GetXaxis()->SetRangeUser(-0.2,0.2);
   residuals->SetLineWidth(3);
-  residuals->Fit("gaus","Q" ,"C" ,-4.3,-4);
+  residuals->Fit("gaus","Q" ,"C" ,-0.2,0.2);
   float sigma = residuals->GetFunction("gaus")->GetParameter(2);
   float mean = residuals->GetFunction("gaus")->GetParameter(1);
 
@@ -32,13 +32,17 @@ void gaussianResolution(){
   cout<<sigma<<endl;
   
   stringstream legend;
+  stringstream legend2;
     
-  TLegend *leg = new TLegend(0.5,0.9,0.9,0.5);
+  TLegend *leg = new TLegend(0.65,0.9,0.9,0.65);
   legend.str("");
-  legend<<"sigma = "<<int(sigma*100)<<"mm ";   
-  legend<<"mean = "<<int(mean*100)<<"mm";
+  legend<<"#sigma = "<<setprecision(3)<<sigma*10<<"mm";   
+  legend2.str("");
+  legend2<<"<x> = "<<setprecision(3)<<mean*10<<"mm";
+
   residuals->GetFunction("gaus")->SetLineWidth(4);
   leg->AddEntry(residuals->GetFunction("gaus"),legend.str().c_str(),"l");
+  leg->AddEntry(residuals->GetFunction("gaus"),legend2.str().c_str(),"l");
   
   if(!residuals) cout<<"histo not found"<<endl;
   
