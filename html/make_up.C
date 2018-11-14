@@ -58,15 +58,6 @@ void make_up(){
       Ca0->Clear();Ca0->Clear();
 
 
-      TH1F * wh0_se6_st1_sl3_TDChisto;
-      wh0_se6_st1_sl3_TDChisto  = (TH1F*) (theFile->Get("wh0_se6_st1_sl3_TDChisto"));
-      wh0_se6_st1_sl3_TDChisto->SetXTitle("DTDigi tdc counts ");
-      wh0_se6_st1_sl3_TDChisto->SetYTitle("counts");
-      wh0_se6_st1_sl3_TDChisto->SetTitle("DTDigi tdc counts phase-1 wh0 se6 st1 SL3");
-      wh0_se6_st1_sl3_TDChisto->Draw();
-      wh0_se6_st1_sl3_TDChisto->SetFillColor(kYellow);
-      Ca0->SaveAs("wh0_se6_st1_sl3_TDChisto.png");
-      Ca0->Clear();Ca0->Clear();
   }
   //TIME
   {
@@ -98,17 +89,6 @@ void make_up(){
       wh0_se6_st1_sl1_TIMEhisto->Draw();
       wh0_se6_st1_sl1_TIMEhisto->SetFillColor(kRed);
       Ca0->SaveAs("wh0_se6_st1_sl1_TIMEhisto.png");
-      Ca0->Clear();Ca0->Clear();
-
-
-      TH1F * wh0_se6_st1_sl3_TIMEhisto;
-      wh0_se6_st1_sl3_TIMEhisto  = (TH1F*) (theFile->Get("wh0_se6_st1_sl3_TIMEhisto"));
-      wh0_se6_st1_sl3_TIMEhisto->SetXTitle("DTDigi time (ns)");
-      wh0_se6_st1_sl3_TIMEhisto->SetYTitle("counts/ns");
-      wh0_se6_st1_sl3_TIMEhisto->SetTitle("DTDigi time phase-1 wh0 se6 st1 SL3");
-      wh0_se6_st1_sl3_TIMEhisto->Draw();
-      wh0_se6_st1_sl3_TIMEhisto->SetFillColor(kYellow);
-      Ca0->SaveAs("wh0_se6_st1_sl3_TIMEhisto.png");
       Ca0->Clear();Ca0->Clear();
   }  
 
@@ -165,15 +145,6 @@ void make_up(){
       Ca1->Clear(); Ca1->Clear();
 
 
-      TH1F * wh0_se6_st1_sl3_TDCPhase2histo;
-      wh0_se6_st1_sl3_TDCPhase2histo  = (TH1F*) (theFile->Get("wh0_se6_st1_sl3_TDCPhase2histo"));
-      wh0_se6_st1_sl3_TDCPhase2histo->SetXTitle("DTDigi tdc counts phase2");
-      wh0_se6_st1_sl3_TDCPhase2histo->SetYTitle("counts");
-      wh0_se6_st1_sl3_TDCPhase2histo->SetTitle("DTDigi tdc counts phase-2 wh0 se6 st1 SL3");
-      wh0_se6_st1_sl3_TDCPhase2histo->Draw();
-      //wh0_se6_st1_sl3_TDCPhase2histo->SetFillColor(kYellow);
-      Ca1->SaveAs("wh0_se6_st1_sl3_TDCPhase2histo.png");
-      Ca1->Clear(); Ca1->Clear();
   }
   
   //TIME
@@ -208,16 +179,6 @@ void make_up(){
       Ca1->SaveAs("wh0_se6_st1_sl1_TIMEPhase2histo.png");
       Ca1->Clear(); Ca1->Clear();
       
-      
-      TH1F * wh0_se6_st1_sl3_TIMEPhase2histo;
-      wh0_se6_st1_sl3_TIMEPhase2histo  = (TH1F*) (theFile->Get("wh0_se6_st1_sl3_TIMEPhase2histo"));
-      wh0_se6_st1_sl3_TIMEPhase2histo->SetXTitle("DTDigi time phase2 (ns)");
-      wh0_se6_st1_sl3_TIMEPhase2histo->SetYTitle("counts/ns");
-      wh0_se6_st1_sl3_TIMEPhase2histo->SetTitle("DTDigi time phase-2 wh0 se6 st1 SL3");
-      wh0_se6_st1_sl3_TIMEPhase2histo->Draw();
-      //wh0_se6_st1_sl3_TIMEPhase2histo->SetFillColor(kYellow);
-      Ca1->SaveAs("wh0_se6_st1_sl3_TIMEPhase2histo.png");
-      Ca1->Clear(); Ca1->Clear();
   }
 
   /*
