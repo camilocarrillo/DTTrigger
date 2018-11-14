@@ -93,17 +93,17 @@ void make_up(){
   }  
 
   //T0                                                                                                                                                                    
-  //{
-  //   TH1F * allT0histo;
-  //   allT0histo  = (TH1F*) (theFile->Get("allT0histo"));
-  //   allT0histo->SetXTitle("segment t0 time (ns)");
-  //    allT0histo->SetYTitle("ns");
-  //   allT0histo->SetTitle("segment t0 time phase-1");
-  //   allT0histo->Draw();
-  //   allT0histo->SetFillColor(kBlack);
-  //   Ca0->SaveAs("allT0histo.png");
-  //   Ca0->Clear();Ca0->Clear();
-  //}
+  {
+      TH1F * allT0histo;
+      allT0histo  = (TH1F*) (theFile->Get("allT0histo"));
+      allT0histo->SetXTitle("segment t0 time (ns)");
+      allT0histo->SetYTitle("counts");
+      allT0histo->SetTitle("segment t0 time phase-1");
+      allT0histo->Draw();
+     allT0histo->SetFillColor(kBlack);
+     Ca0->SaveAs("allT0histo.png");
+     Ca0->Clear();Ca0->Clear();
+  }
 
 
   //Phase-2
@@ -181,23 +181,24 @@ void make_up(){
       
   }
 
-  /*
+  
   //T0                                                                                                                                                                  
   {
       TH1F * allT0Phase2histo;
       allT0Phase2histo  = (TH1F*) (theFile->Get("allT0Phase2histo"));
       allT0Phase2histo->SetXTitle("segment t0 time (ns)");
-      allT0Phase2histo->SetYTitle("ns");
-      allT0Phase2histo->SetTitle("segment t0 time phase-1");
+      allT0Phase2histo->SetYTitle("counts");
+      allT0Phase2histo->SetTitle("segment t0 time phase-2");
       allT0Phase2histo->Draw();
       allT0Phase2histo->SetFillColor(kBlack);
       Ca1->SaveAs("allT0Phase2histo.png");
       Ca1->Clear();Ca1->Clear();
   }
-  */
+  
 
 
   //2D
+  /*
   TH2F * wirevslayer;
   wirevslayer  = (TH2F*) (theFile->Get("wirevslayer"));
   wirevslayer->SetXTitle("wire");
@@ -215,7 +216,7 @@ void make_up(){
   wirevslayer->Draw("colz");
   Ca1->SaveAs("wirevslayerzTDC.png");
   Ca1->Clear(); Ca1->Clear();
-
+  */
 
   //4D segments
   TH1F * wh0_se6_st1_segment_x;
@@ -260,16 +261,16 @@ void make_up(){
   Ca1->SaveAs("wh0_se6_st1_segment_vs_jm_x.png");
   Ca1->Clear(); Ca1->Clear();
 
-  /*
-  TH2F * wh0_se6_st1_segment_vs_jm_T0;
-  wh0_se6_st1_segment_vs_jm_T0  = (TH2F*) (theFile->Get("wh0_se6_st1_segment_vs_jm_T0"));
-  wh0_se6_st1_segment_vs_jm_T0->SetXTitle("segment x position (cm)");
-  wh0_se6_st1_segment_vs_jm_T0->SetYTitle("jm algo x position (cm)");
-  wh0_se6_st1_segment_vs_jm_T0->SetTitle("4D segment_vs_jm x position (cm)");
-  wh0_se6_st1_segment_vs_jm_T0->Draw("colz");
-  Ca1->SaveAs("wh0_se6_st1_segment_vs_jm_T0.png");
+  
+  TH2F * wh0_se6_st1_segment_vs_jm_T0histo;
+  wh0_se6_st1_segment_vs_jm_T0histo  = (TH2F*) (theFile->Get("wh0_se6_st1_segment_vs_jm_T0histo"));
+  wh0_se6_st1_segment_vs_jm_T0histo->SetXTitle("segment phase-2 t0");
+  wh0_se6_st1_segment_vs_jm_T0histo->SetYTitle("jm algo t0");
+  wh0_se6_st1_segment_vs_jm_T0histo->SetTitle("4D segment_vs_jm t0 (ns)");
+  wh0_se6_st1_segment_vs_jm_T0histo->Draw("colz");
+  Ca1->SaveAs("wh0_se6_st1_segment_vs_jm_T0histo.png");
   Ca1->Clear(); Ca1->Clear();
-  */
+  
   
   TH2F * wh0_se6_st1_segment_vs_jm_tanPhi;
   wh0_se6_st1_segment_vs_jm_tanPhi  = (TH2F*) (theFile->Get("wh0_se6_st1_segment_vs_jm_tanPhi"));
@@ -280,16 +281,7 @@ void make_up(){
   Ca1->SaveAs("wh0_se6_st1_segment_vs_jm_tanPhi.png");
   Ca1->Clear(); Ca1->Clear();
 
-  /*TH2F * wh0_se6_st1_segment_vs_jm_BX;
-  wh0_se6_st1_segment_vs_jm_BX  = (TH2F*) (theFile->Get("wh0_se6_st1_segment_vs_jm_BX"));
-  wh0_se6_st1_segment_vs_jm_BX->SetXTitle("segment BX");
-  wh0_se6_st1_segment_vs_jm_BX->SetYTitle("jm algo BX");
-  wh0_se6_st1_segment_vs_jm_BX->SetTitle("4D segment_vs_jm BX");
-  wh0_se6_st1_segment_vs_jm_BX->Draw("colz");
-  Ca1->SaveAs("wh0_se6_st1_segment_vs_jm_BX.png");
-  Ca1->Clear(); Ca1->Clear();
-  */
-
+  
   exit(0);
 
 }
