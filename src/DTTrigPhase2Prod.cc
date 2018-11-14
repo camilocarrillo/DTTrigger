@@ -108,19 +108,21 @@ DTTrigPhase2Prod::~DTTrigPhase2Prod(){
     wh0_se6_st1_sl1_TIMEPhase2histo->Write();
     wh0_se6_st1_sl3_TIMEPhase2histo->Write();
 
-    allT0histo->Write();
-    allT0Phase2histo->Write();
+    //allT0histo->Write();
+    //allT0Phase2histo->Write();
     
     wh0_se6_st1_segment_x->Write();
     wh0_se6_st1_segment_tanPhi->Write();
+    //wh0_se6_st1_T0histo->Write();
+
     //wh0_se6_st1_segment_BX->Write();
 
     wh0_se6_st1_segment_vs_jm_x->Write();
     wh0_se6_st1_segment_vs_jm_x_gauss->Write();
     wh0_se6_st1_segment_vs_jm_tanPhi->Write();
-    wh0_se6_st1_segment_vs_jm_BX->Write();
+    //wh0_se6_st1_segment_vs_jm_BX->Write();
 
-    wh0_se6_st1_segment_vs_jm_T0->Write();
+    //wh0_se6_st1_segment_vs_jm_T0->Write();
 
     wirevslayer->Write();
     wirevslayerzTDC->Write();
@@ -173,10 +175,11 @@ void DTTrigPhase2Prod::beginRun(edm::Run const& iRun, const edm::EventSetup& iEv
     wh0_se6_st1_sl3_TIMEPhase2histo = new TH1F("wh0_se6_st1_sl3_TIMEPhase2histo","wh0_se6_st1_sl3_TIMEPhase2histo",8907,-0.5,89075.5);
     
     //T0
-    allT0histo = new TH1F("allT0histo","allT0histo",100,-10,10);
-    allT0Phase2histo = new TH1F("allT0Phase2histo","allT0Phase2histo",8907,-0.5,89075.5);
-    //wh0_se6_st1_T0histo = new TH1F("wh0_se6_st1_T0histo","wh0_se6_st1_T0histo",1275,-0.5,1274.5);
-    //wh0_se6_st1_T0Phase2histo = new TH1F("wh0_se6_st1_sl3_T0Phase2histo","wh0_se6_st1_T0Phase2histo",8907,-0.5,89075.5);
+    //allT0histo = new TH1F("allT0histo","allT0histo",100,-10,10);
+    //allT0Phase2histo = new TH1F("allT0Phase2histo","allT0Phase2histo",100,-0.5,89075.5);
+    
+    //wh0_se6_st1_T0histo = new TH1F("wh0_se6_st1_T0histo","wh0_se6_st1_T0histo",100,-10,10);
+    //wh0_se6_st1_T0Phase2histo = new TH1F("wh0_se6_st1_sl3_T0Phase2histo","wh0_se6_st1_T0Phase2histo",100,-0.5,89075.5);
     
     //2D
     wh0_se6_st1_segment_x = new TH1F("wh0_se6_st1_segment_x","wh0_se6_st1_segment_x",100,-101,101);
@@ -187,8 +190,8 @@ void DTTrigPhase2Prod::beginRun(edm::Run const& iRun, const edm::EventSetup& iEv
     wh0_se6_st1_segment_vs_jm_x_gauss = new TH1F("wh0_se6_st1_segment_vs_jm_x_gauss","wh0_se6_st1_segment_vs_jm_x_gauss",1000,-8,8);
 
     wh0_se6_st1_segment_vs_jm_tanPhi = new TH2F("wh0_se6_st1_segment_vs_jm_tanPhi","wh0_se6_st1_segment_vs_jm_tanPhi",100,-1.,1.,100,-1.,1.);
-    wh0_se6_st1_segment_vs_jm_BX= new TH2F("wh0_se6_st1_segment_vs_jm_BX","wh0_se6_st1_segment_vs_jm_BX",201,-100,100,201,-100,100);
-    wh0_se6_st1_segment_vs_jm_T0= new TH2F("wh0_se6_st1_segment_vs_jm_T0","wh0_se6_st1_segment_vs_jm_T0",201,-100,100,201,-100,100);
+    //wh0_se6_st1_segment_vs_jm_BX= new TH2F("wh0_se6_st1_segment_vs_jm_BX","wh0_se6_st1_segment_vs_jm_BX",201,-100,100,201,-100,100);
+    //wh0_se6_st1_segment_vs_jm_T0= new TH2F("wh0_se6_st1_segment_vs_jm_T0","wh0_se6_st1_segment_vs_jm_T0",201,0,90000,201,0,90000);
     
     wirevslayer     = new TH2F("wirevslayer","wirevslayer",50,0.5,50.5,8,0.5,8.5);
     wirevslayerzTDC = new TH2F("wirevslayerzTDC","wirevslayerzTDC",50*1600,0.5,50+0.5,8,0.5,8.5);
@@ -223,9 +226,9 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
       DTSegmentCounter[segment->chamberId()]++;
       if(segment->hasPhi()){
 	  segment_t0=segment->phiSegment()->t0();
-	  segment_t0Phase2=segment_t0+25*iEvent.eventAuxiliary().bunchCrossing()+325;
-	  allT0histo->Fill(segment_t0);
-	  allT0Phase2histo->Fill(segment_t0Phase2);
+	  segment_t0Phase2=segment_t0+25*iEvent.eventAuxiliary().bunchCrossing();
+	  //allT0histo->Fill(segment_t0);
+	  //allT0Phase2histo->Fill(segment_t0Phase2);
 	  if(segment->chamberId()==ciemat_chamber_ID  && segment->dimension()==4 && (segment->phiSegment()->recHits()).size()==8 && segment->hasZed()){
 	      LocalPoint segmentPosition= segment->localPosition();
 	      LocalVector segmentDirection=segment->localDirection();
@@ -275,7 +278,7 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	      int digiTDCPhase2 =  (*digiIt).countsTDC()+ iEvent.eventAuxiliary().bunchCrossing()*32;
 	  
 	      int digiTIME = (*digiIt).time();
-	      int digiTIMEPhase2 =  (*digiIt).time()+ iEvent.eventAuxiliary().bunchCrossing()*25;
+	      int digiTIMEPhase2 =  (*digiIt).time()+ iEvent.eventAuxiliary().bunchCrossing()*25-325;
 	  
 	      int layer = dtLId.layer();
 	      int superlayer = dtLId.superlayer();
@@ -366,12 +369,7 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	      memcpy(horizLayout, CELL_HORIZONTAL_LAYOUTS[pathId], 4 * sizeof(int));     
 	      ptrMuonPath->setCellHorizontalLayout(horizLayout);      
 	      analyze(ptrMuonPath);	      
-
-
-
-	      
-
-
+    
 	      double jm_x=(ptrMuonPath->getHorizPos()/10.)-101.3;
 
 	      std::cout<<"DTp2: jm_output_x="<<jm_x
@@ -382,7 +380,12 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	      wh0_se6_st1_segment_vs_jm_x_gauss->Fill(segment_x-jm_x);
 	      wh0_se6_st1_segment_vs_jm_tanPhi->Fill(segment_tanPhi,ptrMuonPath->getTanPhi());
 	      //wh0_se6_st1_segment_vs_jm_BX->Fill(segment_BX,ptrMuonPath->getBxTimeValue());
-	      wh0_se6_st1_segment_vs_jm_T0->Fill(segment_t0Phase2,ptrMuonPath->getBxTimeValue());
+	      //wh0_se6_st1_segment_vs_jm_T0->Fill(segment_t0Phase2,ptrMuonPath->getBxTimeValue());
+
+	      std::cout<<"DTp2: segment_t0Phase2="<<segment_t0Phase2
+		       <<" ptrMuonPath->getBxTimeValue()="<<ptrMuonPath->getBxTimeValue()
+		       <<std::endl;     
+
 	      
 	  }
 	  //delete ptrMuonPath;

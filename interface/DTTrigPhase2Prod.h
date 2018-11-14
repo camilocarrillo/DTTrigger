@@ -81,8 +81,8 @@ class DTTrigPhase2Prod: public edm::EDProducer{
     TH1F * wh0_se6_st1_sl1_TIMEPhase2histo;
     TH1F * wh0_se6_st1_sl3_TIMEPhase2histo;
 
-    TH1F * allT0histo;
-    TH1F * allT0Phase2histo;
+    //TH1F * allT0histo;
+    //TH1F * allT0Phase2histo;
     
     //TH1F * wh0_se6_st1_T0histo;
     //TH1F * wh0_se6_st1_T0Phase2histo;
@@ -94,8 +94,8 @@ class DTTrigPhase2Prod: public edm::EDProducer{
 
     TH2F * wh0_se6_st1_segment_vs_jm_x;     TH1F * wh0_se6_st1_segment_vs_jm_x_gauss;
     TH2F * wh0_se6_st1_segment_vs_jm_tanPhi;
-    TH2F * wh0_se6_st1_segment_vs_jm_BX;
-    TH2F * wh0_se6_st1_segment_vs_jm_T0;
+    //TH2F * wh0_se6_st1_segment_vs_jm_BX;
+    //TH2F * wh0_se6_st1_segment_vs_jm_T0;
 
     TH2F * wirevslayer;
     TH2F * wirevslayerzTDC;
