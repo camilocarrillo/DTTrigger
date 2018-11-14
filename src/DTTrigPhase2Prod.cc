@@ -207,28 +207,81 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
   iEvent.getByToken(dt4DSegments, all4DSegments);
   if(my_debug) std::cout<<"DTp2: I got the segments"<<std::endl;
 
+
+//digiLoop
+  DTDigiCollection::DigiRangeIterator dtLayerId_It;
+  for (dtLayerId_It=dtdigis->begin(); dtLayerId_It!=dtdigis->end(); ++dtLayerId_It){
+      for (DTDigiCollection::const_iterator digiIt = ((*dtLayerId_It).second).first;digiIt!=((*dtLayerId_It).second).second; ++digiIt){
+	  const DTLayerId dtLId = (*dtLayerId_It).first;
+		  
+	  int wire = (*digiIt).wire();
+		  
+	  int digiTDC = (*digiIt).countsTDC();
+	  int digiTDCPhase2 =  (*digiIt).countsTDC()+ iEvent.eventAuxiliary().bunchCrossing()*32;
+		  
+	  int digiTIME = (*digiIt).time();
+	  int digiTIMEPhase2 =  (*digiIt).time()+ iEvent.eventAuxiliary().bunchCrossing()*25-325;
+		  
+	  int layer = dtLId.layer();
+	  int superlayer = dtLId.superlayer();
+		  
+	  allTDChisto->Fill(digiTDC);
+	  allTDCPhase2histo->Fill(digiTDCPhase2);
+		  
+	  allTIMEhisto->Fill(digiTIME);
+	  allTIMEPhase2histo->Fill(digiTIMEPhase2);
+
+	  //only same superlayer as CIEMAT study
+	  if(dtLId.wheel()==0 && dtLId.sector()==6 && dtLId.station()==1 && (superlayer==1 || superlayer==3)){
+	      
+	      wh0_se6_st1_sl1or3_TDChisto->Fill(digiTDC); 
+	      wh0_se6_st1_sl1or3_TDCPhase2histo->Fill(digiTDCPhase2);  
+	      
+	      wh0_se6_st1_sl1or3_TIMEhisto->Fill(digiTIME); 
+	      wh0_se6_st1_sl1or3_TIMEPhase2histo->Fill(digiTIMEPhase2);  
+	      
+	      wirevslayer->Fill(wire,(superlayer-1)*2+layer);
+	      wirevslayerzTDC->Fill(wire-0.5+double(digiTDC)/1600.,(superlayer-1)*2+layer);
+	  }
+      }
+  }
+  
+
   //*******************************4D segments analysis*******************************//
   
   std::map<DTChamberId,int> DTSegmentCounter;
  
   DTChamberId ciemat_chamber_ID(0,1,6);  
 
-
-  double segment_x=-1;
-  double segment_tanPhi=-1;
-  //double segment_BX=-1;
-  
-  double segment_t0=-1;
-  double segment_t0Phase2=-1;
-  
-  DTRecSegment4DCollection::const_iterator segment;
-  for (segment = all4DSegments->begin();segment!=all4DSegments->end(); ++segment){
-      DTSegmentCounter[segment->chamberId()]++;
-      if(segment->hasPhi()){
-	  segment_t0=segment->phiSegment()->t0();
+  //counting all segments and making plots for all segments:
+  DTRecSegment4DCollection::const_iterator segment1;
+  for (segment1 = all4DSegments->begin();segment1!=all4DSegments->end(); ++segment1){
+      DTSegmentCounter[segment1->chamberId()]++;
+      double segment_x=-1;
+      double segment_tanPhi=-1;
+      double segment_t0=-1;
+      double segment_t0Phase2=-1;
+      
+      if(segment1->hasPhi()){
+	  segment_t0=segment1->phiSegment()->t0();
 	  segment_t0Phase2=segment_t0+25*iEvent.eventAuxiliary().bunchCrossing();
+	  std::cout<<"DTp2: segment_t0"<<segment_t0<<" "<<segment_t0Phase2<<std::endl;
 	  //allT0histo->Fill(segment_t0);
 	  //allT0Phase2histo->Fill(segment_t0Phase2);
+
+      }
+      
+  }
+
+  //focus on ciemat chamber
+  DTRecSegment4DCollection::const_iterator segment;
+  for (segment = all4DSegments->begin();segment!=all4DSegments->end(); ++segment){
+      double segment_x=-1;
+      double segment_tanPhi=-1;
+      double segment_t0=-1;
+      double segment_t0Phase2=-1;
+     
+      if(segment->hasPhi()){
 	  if(segment->chamberId()==ciemat_chamber_ID  && segment->dimension()==4 && (segment->phiSegment()->recHits()).size()==8 && segment->hasZed()){
 	      LocalPoint segmentPosition= segment->localPosition();
 	      LocalVector segmentDirection=segment->localDirection();
@@ -247,152 +300,140 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	      wh0_se6_st1_segment_x->Fill(segment_x);
 	      
 	      //wh0_se6_st1_T0histo->Fill(segment_t0);
-	      //wh0_se6_st1_T0Phase2histo->Fill(segment_t0Phase2);	      
-	     
-	  }
+	      //wh0_se6_st1_T0Phase2histo->Fill(segment_t0Phase2);
+
+	      if(DTSegmentCounter[ciemat_chamber_ID]==1 && segment_tanPhi!=-1){
+		  std::cout<<"DTp2: we found a perfect segment in ciemat's chamber"<<std::endl;
+		  std::cout<<"DTp2: segment_x:"<<segment_x
+			   <<" segment_tanPhi:"<<segment_tanPhi
+			   <<" segment_t0:"<<segment_t0
+			   <<" segment_t0Phase2:"<<segment_t0Phase2
+			   <<std::endl;
+		  
+		  int numPrimsPerLayer[4] = {0, 0, 0, 0};
+		  int savedTime[4] = {0, 0, 0, 0};
+		  int savedWire[4] = {0, 0, 0, 0};
+      
+		  //getting digis from ciemats chamber (later loop over range in the chamber
+		  
+		  DTDigiCollection::DigiRangeIterator dtLayerId_It;
+		  for (dtLayerId_It=dtdigis->begin(); dtLayerId_It!=dtdigis->end(); ++dtLayerId_It){
+		      for (DTDigiCollection::const_iterator digiIt = ((*dtLayerId_It).second).first;digiIt!=((*dtLayerId_It).second).second; ++digiIt){		  
+		  
+			  const DTLayerId dtLId = (*dtLayerId_It).first;
+
+
+		      
+		      
+
+			  int wire = (*digiIt).wire();
+		  
+			  int digiTDC = (*digiIt).countsTDC();
+			  int digiTDCPhase2 =  digiTDC + iEvent.eventAuxiliary().bunchCrossing()*32;
+			  
+			  int digiTIME = (*digiIt).time();
+			  int digiTIMEPhase2 =  digiTIME + iEvent.eventAuxiliary().bunchCrossing()*25-325;
+			  
+			  int layer = dtLId.layer();
+			  int superlayer = dtLId.superlayer();
+
+			  if(dtLId.wheel()==0 && dtLId.sector()==6 && dtLId.station()==1 && (superlayer==1 || superlayer==3)){
+			      if(superlayer==1){
+				  wh0_se6_st1_sl1_TDChisto->Fill(digiTDC);wh0_se6_st1_sl1_TDCPhase2histo->Fill(digiTDCPhase2);
+				  wh0_se6_st1_sl1_TIMEhisto->Fill(digiTIME);wh0_se6_st1_sl1_TIMEPhase2histo->Fill(digiTIMEPhase2);
+				  numPrimsPerLayer[layer-1]++;
+				  savedTime[layer-1]=digiTIMEPhase2;
+				  savedWire[layer-1]=wire-1;
+			      }
+			      if(superlayer==3){
+				  wh0_se6_st1_sl3_TDChisto->Fill(digiTDC);wh0_se6_st1_sl3_TDCPhase2histo->Fill(digiTDCPhase2);
+				  wh0_se6_st1_sl3_TIMEhisto->Fill(digiTIME);wh0_se6_st1_sl3_TIMEPhase2histo->Fill(digiTIMEPhase2);
+			      }
+			      //std::cout<<"DTp2: dtLId,wire,digiTDC:"<<dtLId<<" , "<<wire<<" , "<<digiTDC<<std::endl;
+			  }
+		      }
+		  }
+
+		  bool perfect_digi_set=true;
+		  for(int i=1;i<4;i++)
+		      if(numPrimsPerLayer[i]!=1)
+			  perfect_digi_set=false;
+  
+		  DTPrimitive *ptrPrimitive[4];
+  
+		  if(perfect_digi_set){
+		      std::cout<<"DTp2:\t\t we found one hit per layer"<<std::endl;
+		      std::cout<<"DTp2:\t\t we have (numPrims/DTDigis(cmssw)):"
+			       <<" layer 1:"<<numPrimsPerLayer[0]
+			       <<" layer 2:"<<numPrimsPerLayer[1]
+			       <<" layer 3:"<<numPrimsPerLayer[2]
+			       <<" layer 4:"<<numPrimsPerLayer[3]
+			       <<std::endl;
+		      
+		      std::cout<<"DTp2:\t\t (savedTime):"
+			       <<" layer 1:"<<savedTime[0]
+			       <<" layer 2:"<<savedTime[1]
+			       <<" layer 3:"<<savedTime[2]
+			       <<" layer 4:"<<savedTime[3]
+			       <<std::endl;
+		      
+		      std::cout<<"DTp2:\t\t (savedWire(cmssw)):"
+			       <<" layer 1:"<<savedWire[0]
+			       <<" layer 2:"<<savedWire[1]
+			       <<" layer 3:"<<savedWire[2]
+			       <<" layer 4:"<<savedWire[3]
+			       <<std::endl;
+		      
+		      for (int i = 0; i <= 3; i++) {
+			  ptrPrimitive[i] = new DTPrimitive();
+			  ptrPrimitive[i]->setTDCTime(savedTime[i]); 
+			  ptrPrimitive[i]->setChannelId(savedWire[i]);	    
+			  ptrPrimitive[i]->setLayerId(i);	    
+			  std::cout<<"DTp2:\t\t\t Capa: "<<ptrPrimitive[i]->getLayerId()<<" Canal: "<<ptrPrimitive[i]->getChannelId()<<" TDCTime: "<<ptrPrimitive[i]->getTDCTime()<<std::endl;
+		      }
+	  
+		      
+		      //Jose Manuel's code starts from saved values from digis
+		      MuonPath *ptrMuonPath = new MuonPath(ptrPrimitive);
+	  
+		      if (ptrMuonPath->isAnalyzable() && ptrMuonPath->completeMP()){
+			  std::cout<<"DTp2:\t\t\t input: MuonPath' analyzable, TDC Phase2 Times are: "
+				   <<ptrMuonPath->getPrimitive(0)->getTDCTime()
+				   <<" "<<ptrMuonPath->getPrimitive(1)->getTDCTime()
+				   <<" "<<ptrMuonPath->getPrimitive(2)->getTDCTime()
+				   <<" "<<ptrMuonPath->getPrimitive(3)->getTDCTime()<<std::endl;
+			  
+			  int pathId = compute_pathId(ptrMuonPath);
+			  int horizLayout[4];
+			  memcpy(horizLayout, CELL_HORIZONTAL_LAYOUTS[pathId], 4 * sizeof(int));     
+			  ptrMuonPath->setCellHorizontalLayout(horizLayout);      
+			  analyze(ptrMuonPath);	      
+			  
+			  double jm_x=(ptrMuonPath->getHorizPos()/10.)-101.3;
+			  
+			  std::cout<<"DTp2: jm_output_x="<<jm_x
+				   <<"jm_out_tanPhi="<<ptrMuonPath->getTanPhi()
+				   <<"jm_out_BxTimeValue="<<ptrMuonPath->getBxTimeValue()<<std::endl;     
+			  
+			  wh0_se6_st1_segment_vs_jm_x->Fill(segment_x,jm_x);
+			  wh0_se6_st1_segment_vs_jm_x_gauss->Fill(segment_x-jm_x);
+			  wh0_se6_st1_segment_vs_jm_tanPhi->Fill(segment_tanPhi,ptrMuonPath->getTanPhi());
+			  //wh0_se6_st1_segment_vs_jm_BX->Fill(segment_BX,ptrMuonPath->getBxTimeValue());
+			  //wh0_se6_st1_segment_vs_jm_T0->Fill(segment_t0Phase2,ptrMuonPath->getBxTimeValue());
+
+			  std::cout<<"DTp2: segment_t0Phase2="<<segment_t0Phase2
+				   <<" ptrMuonPath->getBxTimeValue()="<<ptrMuonPath->getBxTimeValue()
+				   <<std::endl;     
+		      }
+		      //delete ptrMuonPath;
+		  } //we have a perfeect digi set   
+		  //delete ptrPrimitive;
+	      } //we have a perfect segment in the interesting chamber
+  	  }
       }
   }
-  if(DTSegmentCounter[ciemat_chamber_ID]==1 && segment_tanPhi!=-1){
-      std::cout<<"DTp2: we found a perfect segment in ciemat's chamber"<<std::endl;
-      std::cout<<"DTp2: segment_x:"<<segment_x
-	       <<" segment_tanPhi:"<<segment_tanPhi
-	       <<" segment_t0:"<<segment_t0
-	       <<" segment_t0Phase2:"<<segment_t0Phase2
-	       <<std::endl;
-      
-      //**********************************************************************************/
 
 
-      int numPrimsPerLayer[4] = {0, 0, 0, 0};
-      int savedTime[4] = {0, 0, 0, 0};
-      int savedWire[4] = {0, 0, 0, 0};
-      
-      DTDigiCollection::DigiRangeIterator dtLayerId_It;
-      for (dtLayerId_It=dtdigis->begin(); dtLayerId_It!=dtdigis->end(); ++dtLayerId_It){
-	  for (DTDigiCollection::const_iterator digiIt = ((*dtLayerId_It).second).first;digiIt!=((*dtLayerId_It).second).second; ++digiIt){
-	      const DTLayerId dtLId = (*dtLayerId_It).first;
-	  
-	      int wire = (*digiIt).wire();
-	  
-	      int digiTDC = (*digiIt).countsTDC();
-	      int digiTDCPhase2 =  (*digiIt).countsTDC()+ iEvent.eventAuxiliary().bunchCrossing()*32;
-	  
-	      int digiTIME = (*digiIt).time();
-	      int digiTIMEPhase2 =  (*digiIt).time()+ iEvent.eventAuxiliary().bunchCrossing()*25-325;
-	  
-	      int layer = dtLId.layer();
-	      int superlayer = dtLId.superlayer();
-	  
-	      allTDChisto->Fill(digiTDC);
-	      allTDCPhase2histo->Fill(digiTDCPhase2);
-	  
-	      allTIMEhisto->Fill(digiTIME);
-	      allTIMEPhase2histo->Fill(digiTIMEPhase2);
-	  
-	      //only same superlayer as CIEMAT study
-	      if(dtLId.wheel()==0 && dtLId.sector()==6 && dtLId.station()==1 && (superlayer==1 || superlayer==3)){
-	      
-		  wh0_se6_st1_sl1or3_TDChisto->Fill(digiTDC); 
-		  wh0_se6_st1_sl1or3_TDCPhase2histo->Fill(digiTDCPhase2);  
-	      
-		  wh0_se6_st1_sl1or3_TIMEhisto->Fill(digiTIME); 
-		  wh0_se6_st1_sl1or3_TIMEPhase2histo->Fill(digiTIMEPhase2);  
-
-		  wirevslayer->Fill(wire,(superlayer-1)*2+layer);
-		  wirevslayerzTDC->Fill(wire-0.5+double(digiTDC)/1600.,(superlayer-1)*2+layer);
-	  
-		  if(superlayer==1){
-		      wh0_se6_st1_sl1_TDChisto->Fill(digiTDC);wh0_se6_st1_sl1_TDCPhase2histo->Fill(digiTDCPhase2);
-		      wh0_se6_st1_sl1_TIMEhisto->Fill(digiTIME);wh0_se6_st1_sl1_TIMEPhase2histo->Fill(digiTIMEPhase2);
-		      numPrimsPerLayer[layer-1]++;
-		      savedTime[layer-1]=digiTIMEPhase2;
-		      savedWire[layer-1]=wire-1;
-		  }
-		  if(superlayer==3){
-		      wh0_se6_st1_sl3_TDChisto->Fill(digiTDC);wh0_se6_st1_sl3_TDCPhase2histo->Fill(digiTDCPhase2);
-		      wh0_se6_st1_sl3_TIMEhisto->Fill(digiTIME);wh0_se6_st1_sl3_TIMEPhase2histo->Fill(digiTIMEPhase2);
-		  }
-	      }
-	      //std::cout<<"DTp2: dtLId,wire,digiTDC:"<<dtLId<<" , "<<wire<<" , "<<digiTDC<<std::endl;
-	  }
-      }
-
-      std::cout<<"DTp2:\t we have (numPrims/DTDigis(cmssw)):"
-	       <<" layer 1:"<<numPrimsPerLayer[0]
-	       <<" layer 2:"<<numPrimsPerLayer[1]
-	       <<" layer 3:"<<numPrimsPerLayer[2]
-	       <<" layer 4:"<<numPrimsPerLayer[3]
-	       <<std::endl;
-
-      std::cout<<"DTp2:\t (savedTime):"
-	       <<" layer 1:"<<savedTime[0]
-	       <<" layer 2:"<<savedTime[1]
-	       <<" layer 3:"<<savedTime[2]
-	       <<" layer 4:"<<savedTime[3]
-	       <<std::endl;
-
-      std::cout<<"DTp2:\t (savedWire(cmssw)):"
-	       <<" layer 1:"<<savedWire[0]
-	       <<" layer 2:"<<savedWire[1]
-	       <<" layer 3:"<<savedWire[2]
-	       <<" layer 4:"<<savedWire[3]
-	       <<std::endl;
-
-      bool perfect_digi_set=true;
-      for(int i=1;i<4;i++)
-	  if(numPrimsPerLayer[i]!=1)
-	      perfect_digi_set=false;
-  
-      DTPrimitive *ptrPrimitive[4];
-  
-      if(perfect_digi_set){
-	  std::cout<<"DTp2:\t\t we found one hit per layer"<<std::endl;
-  	  for (int i = 0; i <= 3; i++) {
-	      ptrPrimitive[i] = new DTPrimitive();
-	      ptrPrimitive[i]->setTDCTime(savedTime[i]); 
-	      ptrPrimitive[i]->setChannelId(savedWire[i]);	    
-	      ptrPrimitive[i]->setLayerId(i);	    
-	      std::cout<<"DTp2:\t\t Capa: "<<ptrPrimitive[i]->getLayerId()<<" Canal: "<<ptrPrimitive[i]->getChannelId()<<" TDCTime: "<<ptrPrimitive[i]->getTDCTime()<<std::endl;
-	  }
-	  
-	  MuonPath *ptrMuonPath = new MuonPath(ptrPrimitive);
-	  
-	  if (ptrMuonPath->isAnalyzable() && ptrMuonPath->completeMP()){
-	      std::cout<<"DTp2:\t\t\t input: MuonPath' analyzable, TDC Phase2 Times are: "
-		       <<ptrMuonPath->getPrimitive(0)->getTDCTime()
-		       <<" "<<ptrMuonPath->getPrimitive(1)->getTDCTime()
-		       <<" "<<ptrMuonPath->getPrimitive(2)->getTDCTime()
-		       <<" "<<ptrMuonPath->getPrimitive(3)->getTDCTime()<<std::endl;
-	            
-	      int pathId = compute_pathId(ptrMuonPath);
-	      int horizLayout[4];
-	      memcpy(horizLayout, CELL_HORIZONTAL_LAYOUTS[pathId], 4 * sizeof(int));     
-	      ptrMuonPath->setCellHorizontalLayout(horizLayout);      
-	      analyze(ptrMuonPath);	      
-    
-	      double jm_x=(ptrMuonPath->getHorizPos()/10.)-101.3;
-
-	      std::cout<<"DTp2: jm_output_x="<<jm_x
-		       <<"jm_out_tanPhi="<<ptrMuonPath->getTanPhi()
-		       <<"jm_out_BxTimeValue="<<ptrMuonPath->getBxTimeValue()<<std::endl;     
-	      
-	      wh0_se6_st1_segment_vs_jm_x->Fill(segment_x,jm_x);
-	      wh0_se6_st1_segment_vs_jm_x_gauss->Fill(segment_x-jm_x);
-	      wh0_se6_st1_segment_vs_jm_tanPhi->Fill(segment_tanPhi,ptrMuonPath->getTanPhi());
-	      //wh0_se6_st1_segment_vs_jm_BX->Fill(segment_BX,ptrMuonPath->getBxTimeValue());
-	      //wh0_se6_st1_segment_vs_jm_T0->Fill(segment_t0Phase2,ptrMuonPath->getBxTimeValue());
-
-	      std::cout<<"DTp2: segment_t0Phase2="<<segment_t0Phase2
-		       <<" ptrMuonPath->getBxTimeValue()="<<ptrMuonPath->getBxTimeValue()
-		       <<std::endl;     
-
-	      
-	  }
-	  //delete ptrMuonPath;
-      } //we have a perfeect digi set   
-      //delete ptrPrimitive;
-  } //we have a perfect segment in the interesting chamber
-  
   /*
   for (int layer = 0; layer <= 3; layer++) {
       int numData = data[layer].size();
