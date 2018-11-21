@@ -83,12 +83,10 @@ class DTTrigPhase2Prod: public edm::EDProducer{
     TH1F * allT0Phase2histo;
     
     //TH1F * wh0_se6_st1_T0histo;
-    //TH1F * wh0_se6_st1_T0Phase2histo;
-
+    TH1F * wh0_se6_st1_T0Phase2histo;
 
     TH1F * wh0_se6_st1_segment_x;
     TH1F * wh0_se6_st1_segment_tanPhi;
-    //TH1F * wh0_se6_st1_segment_BX;
 
     TH2F * wh0_se6_st1_segment_vs_jm_x;     
     TH1F * wh0_se6_st1_segment_vs_jm_x_gauss;
@@ -96,15 +94,13 @@ class DTTrigPhase2Prod: public edm::EDProducer{
     TH2F * wh0_se6_st1_segment_vs_jm_tanPhi;
     TH1F * wh0_se6_st1_segment_vs_jm_tanPhi_gauss;
     
-    
     TH2F * wh0_se6_st1_segment_vs_jm_T0histo;
     TH1F * wh0_se6_st1_segment_vs_jm_T0histo_gauss;
     
-    TH2F * wirevslayer;
+    //TH2F * wirevslayer;
     //TH2F * wirevslayerzTDC;
 
     //JM
-
     void run(void);
     void stop(void);
     void analyze(MuonPath *mPath);

@@ -77,6 +77,11 @@ DTTrigPhase2Prod::DTTrigPhase2Prod(const ParameterSet& pset) :
     if(!(my_trig)) my_trig = new DTTrig(my_params,consumesCollector());
     digiLabel_ = pset.getParameter<edm::InputTag>("digiTag");
     dt4DSegments = consumes<DTRecSegment4DCollection>(pset.getParameter < edm::InputTag > ("dt4DSegments"));
+
+    //ported from analyze constructor
+    bxTolerance = 60;
+    //minQuality  = LOWQGHOST;
+    //chiSquareThreshold = 50;
  
 }
 
@@ -107,12 +112,12 @@ DTTrigPhase2Prod::~DTTrigPhase2Prod(){
 
     allT0histo->Write();
     allT0Phase2histo->Write();
+
+    //wh0_se6_st1_T0histo->Write();
+    wh0_se6_st1_T0Phase2histo->Write();
     
     wh0_se6_st1_segment_x->Write();
     wh0_se6_st1_segment_tanPhi->Write();
-    //wh0_se6_st1_T0histo->Write();
-
-    //wh0_se6_st1_segment_BX->Write();
 
     wh0_se6_st1_segment_vs_jm_x->Write();
     wh0_se6_st1_segment_vs_jm_x_gauss->Write();
@@ -123,10 +128,9 @@ DTTrigPhase2Prod::~DTTrigPhase2Prod(){
     wh0_se6_st1_segment_vs_jm_T0histo->Write();
     wh0_se6_st1_segment_vs_jm_T0histo_gauss->Write();
  
-    wirevslayer->Write();
+    //wirevslayer->Write();
     //wirevslayerzTDC->Write();
-
-
+    
     theFileOut->Write();
     theFileOut->Close();
     if (my_trig) delete my_trig;
@@ -172,22 +176,24 @@ void DTTrigPhase2Prod::beginRun(edm::Run const& iRun, const edm::EventSetup& iEv
     //T0
     allT0histo = new TH1F("allT0histo","allT0histo",100,-10,10);
     allT0Phase2histo = new TH1F("allT0Phase2histo","allT0Phase2histo",100,-0.5,89075.5);
+
     //wh0_se6_st1_T0histo = new TH1F("wh0_se6_st1_T0histo","wh0_se6_st1_T0histo",100,-10,10);
+    wh0_se6_st1_T0Phase2histo = new TH1F("wh0_se6_st1_T0Phase2histo","wh0_se6_st1_T0Phase2histo",100,0,90000);
     
     //2D
     wh0_se6_st1_segment_x = new TH1F("wh0_se6_st1_segment_x","wh0_se6_st1_segment_x",100,-102,102);
     wh0_se6_st1_segment_tanPhi = new TH1F("wh0_se6_st1_segment_tanPhi","wh0_se6_st1_segment_tanPhi",100,-1.,1.);
     
     wh0_se6_st1_segment_vs_jm_x = new TH2F("wh0_se6_st1_segment_vs_jm_x","wh0_se6_st1_segment_vs_jm_x",100,-102,102,100,-102,102);
-    wh0_se6_st1_segment_vs_jm_x_gauss = new TH1F("wh0_se6_st1_segment_vs_jm_x_gauss","wh0_se6_st1_segment_vs_jm_x_gauss",1000,-8,8);
+    wh0_se6_st1_segment_vs_jm_x_gauss = new TH1F("wh0_se6_st1_segment_vs_jm_x_gauss","wh0_se6_st1_segment_vs_jm_x_gauss",1000,-0.4,0.4);
 
     wh0_se6_st1_segment_vs_jm_tanPhi = new TH2F("wh0_se6_st1_segment_vs_jm_tanPhi","wh0_se6_st1_segment_vs_jm_tanPhi",100,-1.,1.,100,-1.,1.);
-    wh0_se6_st1_segment_vs_jm_tanPhi_gauss = new TH1F("wh0_se6_st1_segment_vs_jm_tanPhi_gauss","wh0_se6_st1_segment_vs_jm_tanPhi_gauss",100,-1.,1.);
+    wh0_se6_st1_segment_vs_jm_tanPhi_gauss = new TH1F("wh0_se6_st1_segment_vs_jm_tanPhi_gauss","wh0_se6_st1_segment_vs_jm_tanPhi_gauss",300,-0.5,0.5);
 
     wh0_se6_st1_segment_vs_jm_T0histo= new TH2F("wh0_se6_st1_segment_vs_jm_T0histo","wh0_se6_st1_segment_vs_jm_T0histo",201,0,90000,201,0,90000);
     wh0_se6_st1_segment_vs_jm_T0histo_gauss= new TH1F("wh0_se6_st1_segment_vs_jm_T0histo_gauss","wh0_se6_st1_segment_vs_jm_T0histo_gauss",1000,-1000,1000);
     
-    wirevslayer     = new TH2F("wirevslayer","wirevslayer",50,0.5,50.5,8,0.5,8.5);
+    //wirevslayer     = new TH2F("wirevslayer","wirevslayer",50,0.5,50.5,8,0.5,8.5);
     //wirevslayerzTDC = new TH2F("wirevslayerzTDC","wirevslayerzTDC",50*1600,0.5,50+0.5,8,0.5,8.5);
     
 }
@@ -208,7 +214,7 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
       for (DTDigiCollection::const_iterator digiIt = ((*dtLayerId_It).second).first;digiIt!=((*dtLayerId_It).second).second; ++digiIt){
 	  const DTLayerId dtLId = (*dtLayerId_It).first;
 		  
-	  int wire = (*digiIt).wire();
+	  //int wire = (*digiIt).wire();
 		  
 	  int digiTDC = (*digiIt).countsTDC();
 	  int digiTDCPhase2 =  (*digiIt).countsTDC()+ iEvent.eventAuxiliary().bunchCrossing()*32;
@@ -216,7 +222,7 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	  int digiTIME = (*digiIt).time();
 	  int digiTIMEPhase2 =  (*digiIt).time()+ iEvent.eventAuxiliary().bunchCrossing()*25-325;
 		  
-	  int layer = dtLId.layer();
+	  //int layer = dtLId.layer();
 	  int superlayer = dtLId.superlayer();
 		  
 	  allTDChisto->Fill(digiTDC);
@@ -234,7 +240,7 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	      wh0_se6_st1_sl1or3_TIMEhisto->Fill(digiTIME); 
 	      wh0_se6_st1_sl1or3_TIMEPhase2histo->Fill(digiTIMEPhase2);  
 	      
-	      wirevslayer->Fill(wire,(superlayer-1)*2+layer);
+	      //wirevslayer->Fill(wire,(superlayer-1)*2+layer);
 	      //wirevslayerzTDC->Fill(wire-0.5+double(digiTDC)/1600.,(superlayer-1)*2+layer);
 	  }
       }
@@ -259,7 +265,7 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
       if(segment1->hasPhi()){
 	  segment_t0=segment1->phiSegment()->t0();
 	  segment_t0Phase2=segment_t0+25*iEvent.eventAuxiliary().bunchCrossing();
-	  if(my_debug) std::cout<<"DTp2: segment_t0"<<segment_t0<<" "<<segment_t0Phase2<<std::endl;
+	  if(my_debug) std::cout<<"DTp2: segment_t0:"<<segment_t0<<" segment_t0Phase2:"<<segment_t0Phase2<<std::endl;
 	  allT0histo->Fill(segment_t0);
 	  allT0Phase2histo->Fill(segment_t0Phase2);
 
@@ -276,7 +282,7 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	      double segment_t0=segment->phiSegment()->t0();
 	      double segment_t0Phase2=segment_t0+25*iEvent.eventAuxiliary().bunchCrossing();
 	      //wh0_se6_st1_T0histo->Fill(segment_t0);
-	      //wh0_se6_st1_T0Phase2histo->Fill(segment_t0Phase2);
+	      wh0_se6_st1_T0Phase2histo->Fill(segment_t0Phase2);
 
 	      //tanPhi
 	      LocalVector segmentDirection=segment->localDirection();
@@ -320,14 +326,12 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 		      int layer = dtLId.layer();
 		      int superlayer = dtLId.superlayer();
 
-		      if(dtLId.wheel()==0 && dtLId.sector()==6 && dtLId.station()==1 && (superlayer==1 || superlayer==3)){
-			  if(superlayer==1){
-			      wh0_se6_st1_sl1_TDChisto->Fill(digiTDC);wh0_se6_st1_sl1_TDCPhase2histo->Fill(digiTDCPhase2);
-			      wh0_se6_st1_sl1_TIMEhisto->Fill(digiTIME);wh0_se6_st1_sl1_TIMEPhase2histo->Fill(digiTIMEPhase2);
-			      numPrimsPerLayer[layer-1]++;
-			      savedTime[layer-1]=digiTIMEPhase2;
-			      savedWire[layer-1]=wire-1;
-			  }
+		      if(dtLId.wheel()==0 && dtLId.sector()==6 && dtLId.station()==1 && superlayer==1){
+			  wh0_se6_st1_sl1_TDChisto->Fill(digiTDC);wh0_se6_st1_sl1_TDCPhase2histo->Fill(digiTDCPhase2);
+			  wh0_se6_st1_sl1_TIMEhisto->Fill(digiTIME);wh0_se6_st1_sl1_TIMEPhase2histo->Fill(digiTIMEPhase2);
+			  numPrimsPerLayer[layer-1]++;
+			  savedTime[layer-1]=digiTIMEPhase2;
+			  savedWire[layer-1]=wire-1;
 			  //if(my_debug) std::cout<<"DTp2: dtLId,wire,digiTDC:"<<dtLId<<" , "<<wire<<" , "<<digiTDC<<std::endl;
 		      }
 		  }
@@ -343,25 +347,25 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	      if(perfect_digi_set){
 		  if(my_debug) std::cout<<"DTp2:\t\t we found one hit per layer"<<std::endl;
 		  if(my_debug) std::cout<<"DTp2:\t\t we have (numPrims/DTDigis(cmssw)):"
-			   <<" layer 1:"<<numPrimsPerLayer[0]
-			   <<" layer 2:"<<numPrimsPerLayer[1]
-			   <<" layer 3:"<<numPrimsPerLayer[2]
-			   <<" layer 4:"<<numPrimsPerLayer[3]
-			   <<std::endl;
+					<<" layer 1:"<<numPrimsPerLayer[0]
+					<<" layer 2:"<<numPrimsPerLayer[1]
+					<<" layer 3:"<<numPrimsPerLayer[2]
+					<<" layer 4:"<<numPrimsPerLayer[3]
+					<<std::endl;
 		      
 		  if(my_debug) std::cout<<"DTp2:\t\t (savedTime):"
-			   <<" layer 1:"<<savedTime[0]
-			   <<" layer 2:"<<savedTime[1]
-			   <<" layer 3:"<<savedTime[2]
-			   <<" layer 4:"<<savedTime[3]
-			   <<std::endl;
-		      
+					<<" layer 1:"<<savedTime[0]
+					<<" layer 2:"<<savedTime[1]
+					<<" layer 3:"<<savedTime[2]
+					<<" layer 4:"<<savedTime[3]
+					<<std::endl;
+		  
 		  if(my_debug) std::cout<<"DTp2:\t\t (savedWire(cmssw)):"
-			   <<" layer 1:"<<savedWire[0]
-			   <<" layer 2:"<<savedWire[1]
-			   <<" layer 3:"<<savedWire[2]
-			   <<" layer 4:"<<savedWire[3]
-			   <<std::endl;
+					<<" layer 1:"<<savedWire[0]
+					<<" layer 2:"<<savedWire[1]
+					<<" layer 3:"<<savedWire[2]
+					<<" layer 4:"<<savedWire[3]
+					<<std::endl;
 		      
 		  for (int i = 0; i <= 3; i++) {
 		      ptrPrimitive[i] = new DTPrimitive();
@@ -393,8 +397,8 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 		      double jm_t0=ptrMuonPath->getBxTimeValue();
 		      
 		      if(my_debug) std::cout<<"DTp2: jm_output_x="<<jm_x
-					    <<"jm_out_tanPhi="<<jm_tanPhi
-					    <<"jm_out_BxTimeValue="<<jm_t0
+					    <<" jm_out_tanPhi="<<jm_tanPhi
+					    <<" jm_out_BxTimeValue="<<jm_t0
 					    <<std::endl;     
 		      
 		      wh0_se6_st1_segment_vs_jm_x->Fill(segment_x,jm_x);
@@ -507,12 +511,11 @@ const int DTTrigPhase2Prod::LAYER_ARRANGEMENTS[MAX_VERT_ARRANG][3] = {
 /*CONSTRUCTOR NOT PORTED... ONLY THE FUNCTIONS
 PathAnalyzer::PathAnalyzer(MuonPath &inMuonPath, MuonPath &outValidMuonPath) //: inMuonPath(inMuonPath), outValidMuonPath(outValidMuonPath)
 {
-    if(my_debug) std::cout<<"DTp2: Creando un 'PathAnalyzer'"<<std::endl;
-    bxTolerance = 0;
-    minQuality  = LOWQGHOST;
-    reset();
-    
-    chiSquareThreshold = 50;
+if(my_debug) std::cout<<"DTp2: Creando un 'PathAnalyzer'"<<std::endl;
+bxTolerance = 0;
+minQuality  = LOWQGHOST;
+reset();
+chiSquareThreshold = 50;
 }
 */
 
@@ -1126,6 +1129,16 @@ bool DTTrigPhase2Prod::sameBXValue(PARTIAL_LATQ_TYPE* latq) {
   obliga a que la diferencia entre pares sea menor que un cierto valor umbral.
   Para hacerlo cómodo se crean 6 booleanos que evalúan cada posible diferencia
   */
+  
+  if(my_debug) std::cout<<"Dtp2: bxTolerance: "<<bxTolerance<<std::endl;
+
+  if(my_debug) std::cout<<"Dtp2: \t\t\t\t\t\t d01:"<<abs(latq[0].bxValue - latq[1].bxValue)<<std::endl;
+  if(my_debug) std::cout<<"Dtp2: \t\t\t\t\t\t d02:"<<abs(latq[0].bxValue - latq[2].bxValue)<<std::endl;
+  if(my_debug) std::cout<<"Dtp2: \t\t\t\t\t\t d03:"<<abs(latq[0].bxValue - latq[3].bxValue)<<std::endl;
+  if(my_debug) std::cout<<"Dtp2: \t\t\t\t\t\t d12:"<<abs(latq[1].bxValue - latq[2].bxValue)<<std::endl;
+  if(my_debug) std::cout<<"Dtp2: \t\t\t\t\t\t d13:"<<abs(latq[1].bxValue - latq[3].bxValue)<<std::endl;
+  if(my_debug) std::cout<<"Dtp2: \t\t\t\t\t\t d23:"<<abs(latq[2].bxValue - latq[3].bxValue)<<std::endl;
+
   bool d01, d02, d03, d12, d13, d23;
   d01 = (abs(latq[0].bxValue - latq[1].bxValue) <= bxTolerance) ? true : false;
   d02 = (abs(latq[0].bxValue - latq[2].bxValue) <= bxTolerance) ? true : false;
@@ -1134,12 +1147,12 @@ bool DTTrigPhase2Prod::sameBXValue(PARTIAL_LATQ_TYPE* latq) {
   d13 = (abs(latq[1].bxValue - latq[3].bxValue) <= bxTolerance) ? true : false;
   d23 = (abs(latq[2].bxValue - latq[3].bxValue) <= bxTolerance) ? true : false;
 
-  /* Casos con 4 grupos de combinaciones parciales de lateralidad válidas */
+  /* Casos con 4 grupos de combinaciones parciales de lateralidad validas */
   if ((latq[0].latQValid && latq[1].latQValid && latq[2].latQValid &&
        latq[3].latQValid) && !(d01 && d12 && d23))
     result = false;
   else
-    /* Los 4 casos posibles de 3 grupos de lateralidades parciales válidas */
+    /* Los 4 casos posibles de 3 grupos de lateralidades parciales validas */
     if ( ((latq[0].latQValid && latq[1].latQValid && latq[2].latQValid) &&
           !(d01 && d12)
           )
@@ -1158,8 +1171,8 @@ bool DTTrigPhase2Prod::sameBXValue(PARTIAL_LATQ_TYPE* latq) {
         )
       result = false;
     else
-      /* Por último, los 6 casos posibles de pares de lateralidades parciales
-      válidas */
+      /* Por ultimo, los 6 casos posibles de pares de lateralidades parciales validas */
+
       if ( ((latq[0].latQValid && latq[1].latQValid) && !d01) ||
            ((latq[0].latQValid && latq[2].latQValid) && !d02) ||
            ((latq[0].latQValid && latq[3].latQValid) && !d03) ||

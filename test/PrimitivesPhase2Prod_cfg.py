@@ -15,7 +15,7 @@ process.GlobalTag.globaltag = "90X_dataRun2_Express_v2"
 
 
 process.dtTriggerPhase2PrimitiveDigis.digiTag = "hltMuonDTDigis"
-process.dtTriggerPhase2PrimitiveDigis.debug = False
+process.dtTriggerPhase2PrimitiveDigis.debug = True
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
@@ -29,7 +29,7 @@ process.source = cms.Source("PoolSource",
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
-#    input = cms.untracked.int32(200000)
+#    input = cms.untracked.int32(100000)
 )
 
 process.out = cms.OutputModule("PoolOutputModule",

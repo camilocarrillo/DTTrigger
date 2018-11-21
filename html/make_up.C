@@ -22,7 +22,7 @@ void make_up(){
   //Phase-1
 
   cout<<"creating canvas"<<endl;
-  TCanvas * Ca0 = new TCanvas("Ca0","Ca0",1980,1020);
+  TCanvas * Ca0 = new TCanvas("Ca0","Ca0",1200,800);
   Ca0->cd();
  
   //TDC
@@ -100,15 +100,28 @@ void make_up(){
       allT0histo->SetYTitle("counts");
       allT0histo->SetTitle("segment t0 time phase-1");
       allT0histo->Draw();
-     allT0histo->SetFillColor(kBlack);
-     Ca0->SaveAs("allT0histo.png");
-     Ca0->Clear();Ca0->Clear();
+      allT0histo->SetFillColor(kBlack);
+      Ca0->SaveAs("allT0histo.png");
+      Ca0->Clear();Ca0->Clear();   
+
+
+      /*
+      TH1F * wh0_se6_st1_T0histo;
+      wh0_se6_st1_T0histo  = (TH1F*) (theFile->Get("wh0_se6_st1_T0histo"));
+      wh0_se6_st1_T0histo->SetXTitle("segment t0 time (ns)");
+      wh0_se6_st1_T0histo->SetYTitle("counts");
+      wh0_se6_st1_T0histo->SetTitle("segment t0 time phase-1");
+      wh0_se6_st1_T0histo->Draw();
+      wh0_se6_st1_T0histo->SetFillColor(kBlack);
+      Ca0->SaveAs("wh0_se6_st1_T0histo.png");
+      Ca0->Clear();Ca0->Clear();
+      */
   }
 
 
   //Phase-2
 
-  TCanvas * Ca1 = new TCanvas("Ca1","Ca1",1980,1020);
+  TCanvas * Ca1 = new TCanvas("Ca1","Ca1",1200,800);
   Ca1->cd();
 
 
@@ -193,9 +206,19 @@ void make_up(){
       allT0Phase2histo->SetFillColor(kBlack);
       Ca1->SaveAs("allT0Phase2histo.png");
       Ca1->Clear();Ca1->Clear();
+
+      //problem here
+      TH1F * wh0_se6_st1_T0Phase2histo;
+      wh0_se6_st1_T0Phase2histo  = (TH1F*) (theFile->Get("wh0_se6_st1_T0Phase2histo"));
+      wh0_se6_st1_T0Phase2histo->SetXTitle("segment t0 time (ns)");
+      wh0_se6_st1_T0Phase2histo->SetYTitle("counts");
+      wh0_se6_st1_T0Phase2histo->SetTitle("segment t0 time phase-2");
+      wh0_se6_st1_T0Phase2histo->Draw();
+      wh0_se6_st1_T0Phase2histo->SetFillColor(kBlack);
+      Ca1->SaveAs("wh0_se6_st1_T0Phase2histo.png");
+      Ca1->Clear();Ca1->Clear();
   }
   
-
 
   //2D
   /*
@@ -255,8 +278,8 @@ void make_up(){
   TH2F * wh0_se6_st1_segment_vs_jm_x;
   wh0_se6_st1_segment_vs_jm_x  = (TH2F*) (theFile->Get("wh0_se6_st1_segment_vs_jm_x"));
   wh0_se6_st1_segment_vs_jm_x->SetXTitle("segment x position (cm)");
-  wh0_se6_st1_segment_vs_jm_x->SetYTitle("jm algo x position (cm)");
-  wh0_se6_st1_segment_vs_jm_x->SetTitle("4D segment_vs_jm x position (cm)");
+  wh0_se6_st1_segment_vs_jm_x->SetYTitle("phase-2 L1 primitive x position (cm)");
+  wh0_se6_st1_segment_vs_jm_x->SetTitle("4D segment vs phase-2 L1 primitive x position (cm)");
   wh0_se6_st1_segment_vs_jm_x->Draw("colz");
   Ca1->SaveAs("wh0_se6_st1_segment_vs_jm_x.png");
   Ca1->Clear(); Ca1->Clear();
@@ -265,8 +288,8 @@ void make_up(){
   TH2F * wh0_se6_st1_segment_vs_jm_T0histo;
   wh0_se6_st1_segment_vs_jm_T0histo  = (TH2F*) (theFile->Get("wh0_se6_st1_segment_vs_jm_T0histo"));
   wh0_se6_st1_segment_vs_jm_T0histo->SetXTitle("segment phase-2 t0");
-  wh0_se6_st1_segment_vs_jm_T0histo->SetYTitle("jm algo t0");
-  wh0_se6_st1_segment_vs_jm_T0histo->SetTitle("4D segment_vs_jm t0 (ns)");
+  wh0_se6_st1_segment_vs_jm_T0histo->SetYTitle("phase-2 L1 primitive t0");
+  wh0_se6_st1_segment_vs_jm_T0histo->SetTitle("4D segment vs phase-2 L1 primitive t0 (ns)");
   wh0_se6_st1_segment_vs_jm_T0histo->Draw("colz");
   Ca1->SaveAs("wh0_se6_st1_segment_vs_jm_T0histo.png");
   Ca1->Clear(); Ca1->Clear();
@@ -275,8 +298,8 @@ void make_up(){
   TH2F * wh0_se6_st1_segment_vs_jm_tanPhi;
   wh0_se6_st1_segment_vs_jm_tanPhi  = (TH2F*) (theFile->Get("wh0_se6_st1_segment_vs_jm_tanPhi"));
   wh0_se6_st1_segment_vs_jm_tanPhi->SetXTitle("segment tan(#phi)");
-  wh0_se6_st1_segment_vs_jm_tanPhi->SetYTitle("jm algo tan(#phi)");
-  wh0_se6_st1_segment_vs_jm_tanPhi->SetTitle("4D segment_vs_jm tan(#phi)");
+  wh0_se6_st1_segment_vs_jm_tanPhi->SetYTitle("phase-2 L1 primitive algo tan(#phi)");
+  wh0_se6_st1_segment_vs_jm_tanPhi->SetTitle("4D segment vs phase-2 L1 primitive tan(#phi)");
   wh0_se6_st1_segment_vs_jm_tanPhi->Draw("colz");
   Ca1->SaveAs("wh0_se6_st1_segment_vs_jm_tanPhi.png");
   Ca1->Clear(); Ca1->Clear();
