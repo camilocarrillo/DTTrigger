@@ -37,24 +37,24 @@ void make_up(){
       Ca0->SaveAs("allTDChisto.png");
       Ca0->Clear();Ca0->Clear();
 
-      TH1F * wh0_se6_st1_sl1or3_TDChisto;
-      wh0_se6_st1_sl1or3_TDChisto  = (TH1F*) (theFile->Get("wh0_se6_st1_sl1or3_TDChisto"));
-      wh0_se6_st1_sl1or3_TDChisto->SetXTitle("DTDigi tdc counts ");
-      wh0_se6_st1_sl1or3_TDChisto->SetYTitle("counts");
-      wh0_se6_st1_sl1or3_TDChisto->SetTitle("DTDigi tdc counts phase-1 wh0 se6 st1 SL1 and SL3");
-      wh0_se6_st1_sl1or3_TDChisto->Draw();
-      wh0_se6_st1_sl1or3_TDChisto->SetFillColor(kGreen);
-      Ca0->SaveAs("wh0_se6_st1_sl1or3_TDChisto.png");
+      TH1F * selected_chamber_sl1_no_seg_selection_TDChisto;
+      selected_chamber_sl1_no_seg_selection_TDChisto  = (TH1F*) (theFile->Get("selected_chamber_sl1_no_seg_selection_TDChisto"));
+      selected_chamber_sl1_no_seg_selection_TDChisto->SetXTitle("DTDigi tdc counts ");
+      selected_chamber_sl1_no_seg_selection_TDChisto->SetYTitle("counts");
+      selected_chamber_sl1_no_seg_selection_TDChisto->SetTitle("DTDigi tdc counts phase-1 selected chamber SL1 ");
+      selected_chamber_sl1_no_seg_selection_TDChisto->Draw();
+      selected_chamber_sl1_no_seg_selection_TDChisto->SetFillColor(kGreen);
+      Ca0->SaveAs("selected_chamber_sl1_no_seg_selection_TDChisto.png");
       Ca0->Clear();Ca0->Clear();
 
-      TH1F * wh0_se6_st1_sl1_TDChisto;
-      wh0_se6_st1_sl1_TDChisto  = (TH1F*) (theFile->Get("wh0_se6_st1_sl1_TDChisto"));
-      wh0_se6_st1_sl1_TDChisto->SetXTitle("DTDigi tdc counts ");
-      wh0_se6_st1_sl1_TDChisto->SetYTitle("counts");
-      wh0_se6_st1_sl1_TDChisto->SetTitle("DTDigi tdc counts phase-1 wh0 se6 st1 SL1");
-      wh0_se6_st1_sl1_TDChisto->Draw();
-      wh0_se6_st1_sl1_TDChisto->SetFillColor(kRed);
-      Ca0->SaveAs("wh0_se6_st1_sl1_TDChisto.png");
+      TH1F * selected_chamber_sl1_TDChisto;
+      selected_chamber_sl1_TDChisto  = (TH1F*) (theFile->Get("selected_chamber_sl1_TDChisto"));
+      selected_chamber_sl1_TDChisto->SetXTitle("DTDigi tdc counts ");
+      selected_chamber_sl1_TDChisto->SetYTitle("counts");
+      selected_chamber_sl1_TDChisto->SetTitle("DTDigi tdc counts phase-1 selected chamber SL1");
+      selected_chamber_sl1_TDChisto->Draw();
+      selected_chamber_sl1_TDChisto->SetFillColor(kRed);
+      Ca0->SaveAs("selected_chamber_sl1_TDChisto.png");
       Ca0->Clear();Ca0->Clear();
 
 
@@ -71,24 +71,24 @@ void make_up(){
       Ca0->SaveAs("allTIMEhisto.png");
       Ca0->Clear();Ca0->Clear();
 
-      TH1F * wh0_se6_st1_sl1or3_TIMEhisto;
-      wh0_se6_st1_sl1or3_TIMEhisto  = (TH1F*) (theFile->Get("wh0_se6_st1_sl1or3_TIMEhisto"));
-      wh0_se6_st1_sl1or3_TIMEhisto->SetXTitle("DTDigi time (ns)");
-      wh0_se6_st1_sl1or3_TIMEhisto->SetYTitle("counts/ns");
-      wh0_se6_st1_sl1or3_TIMEhisto->SetTitle("DTDigi time phase-1 wh0 se6 st1 SL1 and SL3");
-      wh0_se6_st1_sl1or3_TIMEhisto->Draw();
-      wh0_se6_st1_sl1or3_TIMEhisto->SetFillColor(kGreen);
-      Ca0->SaveAs("wh0_se6_st1_sl1or3_TIMEhisto.png");
+      TH1F * selected_chamber_sl1_no_seg_selection_TIMEhisto;
+      selected_chamber_sl1_no_seg_selection_TIMEhisto  = (TH1F*) (theFile->Get("selected_chamber_sl1_no_seg_selection_TIMEhisto"));
+      selected_chamber_sl1_no_seg_selection_TIMEhisto->SetXTitle("DTDigi time (ns)");
+      selected_chamber_sl1_no_seg_selection_TIMEhisto->SetYTitle("counts/ns");
+      selected_chamber_sl1_no_seg_selection_TIMEhisto->SetTitle("DTDigi time phase-1 selected chamber SL1 no segment selection");
+      selected_chamber_sl1_no_seg_selection_TIMEhisto->Draw();
+      selected_chamber_sl1_no_seg_selection_TIMEhisto->SetFillColor(kGreen);
+      Ca0->SaveAs("selected_chamber_sl1_no_seg_selection_TIMEhisto.png");
       Ca0->Clear();Ca0->Clear();
 
-      TH1F * wh0_se6_st1_sl1_TIMEhisto;
-      wh0_se6_st1_sl1_TIMEhisto  = (TH1F*) (theFile->Get("wh0_se6_st1_sl1_TIMEhisto"));
-      wh0_se6_st1_sl1_TIMEhisto->SetXTitle("DTDigi time (ns)");
-      wh0_se6_st1_sl1_TIMEhisto->SetYTitle("counts/ns");
-      wh0_se6_st1_sl1_TIMEhisto->SetTitle("DTDigi time phase-1 wh0 se6 st1 SL1");
-      wh0_se6_st1_sl1_TIMEhisto->Draw();
-      wh0_se6_st1_sl1_TIMEhisto->SetFillColor(kRed);
-      Ca0->SaveAs("wh0_se6_st1_sl1_TIMEhisto.png");
+      TH1F * selected_chamber_sl1_TIMEhisto;
+      selected_chamber_sl1_TIMEhisto  = (TH1F*) (theFile->Get("selected_chamber_sl1_TIMEhisto"));
+      selected_chamber_sl1_TIMEhisto->SetXTitle("DTDigi time (ns)");
+      selected_chamber_sl1_TIMEhisto->SetYTitle("counts/ns");
+      selected_chamber_sl1_TIMEhisto->SetTitle("DTDigi time phase-1 selected chamber SL1");
+      selected_chamber_sl1_TIMEhisto->Draw();
+      selected_chamber_sl1_TIMEhisto->SetFillColor(kRed);
+      Ca0->SaveAs("selected_chamber_sl1_TIMEhisto.png");
       Ca0->Clear();Ca0->Clear();
   }  
 
@@ -106,14 +106,14 @@ void make_up(){
 
 
       /*
-      TH1F * wh0_se6_st1_T0histo;
-      wh0_se6_st1_T0histo  = (TH1F*) (theFile->Get("wh0_se6_st1_T0histo"));
-      wh0_se6_st1_T0histo->SetXTitle("segment t0 time (ns)");
-      wh0_se6_st1_T0histo->SetYTitle("counts");
-      wh0_se6_st1_T0histo->SetTitle("segment t0 time phase-1");
-      wh0_se6_st1_T0histo->Draw();
-      wh0_se6_st1_T0histo->SetFillColor(kBlack);
-      Ca0->SaveAs("wh0_se6_st1_T0histo.png");
+      TH1F * selected_chamber_T0histo;
+      selected_chamber_T0histo  = (TH1F*) (theFile->Get("selected_chamber_T0histo"));
+      selected_chamber_T0histo->SetXTitle("segment t0 time (ns)");
+      selected_chamber_T0histo->SetYTitle("counts");
+      selected_chamber_T0histo->SetTitle("segment t0 time phase-1");
+      selected_chamber_T0histo->Draw();
+      selected_chamber_T0histo->SetFillColor(kBlack);
+      Ca0->SaveAs("selected_chamber_T0histo.png");
       Ca0->Clear();Ca0->Clear();
       */
   }
@@ -137,24 +137,24 @@ void make_up(){
       Ca1->SaveAs("allTDCPhase2histo.png");
       Ca1->Clear(); Ca1->Clear();
 
-      TH1F * wh0_se6_st1_sl1or3_TDCPhase2histo;
-      wh0_se6_st1_sl1or3_TDCPhase2histo  = (TH1F*) (theFile->Get("wh0_se6_st1_sl1or3_TDCPhase2histo"));
-      wh0_se6_st1_sl1or3_TDCPhase2histo->SetXTitle("DTDigi tdc counts phase2");
-      wh0_se6_st1_sl1or3_TDCPhase2histo->SetYTitle("counts");
-      wh0_se6_st1_sl1or3_TDCPhase2histo->SetTitle("DTDigi tdc counts phase-2 wh0 se6 st1 SL1 and SL3");
-      wh0_se6_st1_sl1or3_TDCPhase2histo->Draw();
-      //wh0_se6_st1_sl1or3_TDCPhase2histo->SetFillColor(kGreen);
-      Ca1->SaveAs("wh0_se6_st1_sl1or3_TDCPhase2histo.png");
+      TH1F * selected_chamber_sl1_no_seg_selection_TDCPhase2histo;
+      selected_chamber_sl1_no_seg_selection_TDCPhase2histo  = (TH1F*) (theFile->Get("selected_chamber_sl1_no_seg_selection_TDCPhase2histo"));
+      selected_chamber_sl1_no_seg_selection_TDCPhase2histo->SetXTitle("DTDigi tdc counts phase2");
+      selected_chamber_sl1_no_seg_selection_TDCPhase2histo->SetYTitle("counts");
+      selected_chamber_sl1_no_seg_selection_TDCPhase2histo->SetTitle("DTDigi tdc counts phase-2 selected chamber SL1 no segment selection");
+      selected_chamber_sl1_no_seg_selection_TDCPhase2histo->Draw();
+      //selected_chamber_sl1_no_seg_selection_TDCPhase2histo->SetFillColor(kGreen);
+      Ca1->SaveAs("selected_chamber_sl1_no_seg_selection_TDCPhase2histo.png");
       Ca1->Clear(); Ca1->Clear();
 
-      TH1F * wh0_se6_st1_sl1_TDCPhase2histo;
-      wh0_se6_st1_sl1_TDCPhase2histo  = (TH1F*) (theFile->Get("wh0_se6_st1_sl1_TDCPhase2histo"));
-      wh0_se6_st1_sl1_TDCPhase2histo->SetXTitle("DTDigi tdc counts phase2");
-      wh0_se6_st1_sl1_TDCPhase2histo->SetYTitle("counts");
-      wh0_se6_st1_sl1_TDCPhase2histo->SetTitle("DTDigi tdc counts phase-2 wh0 se6 st1 SL1");
-      wh0_se6_st1_sl1_TDCPhase2histo->Draw();
-      //wh0_se6_st1_sl1_TDCPhase2histo->SetFillColor(kRed);
-      Ca1->SaveAs("wh0_se6_st1_sl1_TDCPhase2histo.png");
+      TH1F * selected_chamber_sl1_TDCPhase2histo;
+      selected_chamber_sl1_TDCPhase2histo  = (TH1F*) (theFile->Get("selected_chamber_sl1_TDCPhase2histo"));
+      selected_chamber_sl1_TDCPhase2histo->SetXTitle("DTDigi tdc counts phase2");
+      selected_chamber_sl1_TDCPhase2histo->SetYTitle("counts");
+      selected_chamber_sl1_TDCPhase2histo->SetTitle("DTDigi tdc counts phase-2 selected chamber SL1");
+      selected_chamber_sl1_TDCPhase2histo->Draw();
+      //selected_chamber_sl1_TDCPhase2histo->SetFillColor(kRed);
+      Ca1->SaveAs("selected_chamber_sl1_TDCPhase2histo.png");
       Ca1->Clear(); Ca1->Clear();
 
 
@@ -172,24 +172,24 @@ void make_up(){
       Ca1->SaveAs("allTIMEPhase2histo.png");
       Ca1->Clear(); Ca1->Clear();
       
-      TH1F * wh0_se6_st1_sl1or3_TIMEPhase2histo;
-      wh0_se6_st1_sl1or3_TIMEPhase2histo  = (TH1F*) (theFile->Get("wh0_se6_st1_sl1or3_TIMEPhase2histo"));
-      wh0_se6_st1_sl1or3_TIMEPhase2histo->SetXTitle("DTDigi time phase2 (ns)");
-      wh0_se6_st1_sl1or3_TIMEPhase2histo->SetYTitle("counts/ns");
-      wh0_se6_st1_sl1or3_TIMEPhase2histo->SetTitle("DTDigi time phase-2 wh0 se6 st1 SL1 and SL3");
-      wh0_se6_st1_sl1or3_TIMEPhase2histo->Draw();
-      //wh0_se6_st1_sl1or3_TIMEPhase2histo->SetFillColor(kGreen);
-      Ca1->SaveAs("wh0_se6_st1_sl1or3_TIMEPhase2histo.png");
+      TH1F * selected_chamber_sl1_no_seg_selection_TIMEPhase2histo;
+      selected_chamber_sl1_no_seg_selection_TIMEPhase2histo  = (TH1F*) (theFile->Get("selected_chamber_sl1_no_seg_selection_TIMEPhase2histo"));
+      selected_chamber_sl1_no_seg_selection_TIMEPhase2histo->SetXTitle("DTDigi time phase2 (ns)");
+      selected_chamber_sl1_no_seg_selection_TIMEPhase2histo->SetYTitle("counts/ns");
+      selected_chamber_sl1_no_seg_selection_TIMEPhase2histo->SetTitle("DTDigi time phase-2 selected chamber SL1 no segment selection");
+      selected_chamber_sl1_no_seg_selection_TIMEPhase2histo->Draw();
+      //selected_chamber_sl1_no_seg_selection_TIMEPhase2histo->SetFillColor(kGreen);
+      Ca1->SaveAs("selected_chamber_sl1_no_seg_selection_TIMEPhase2histo.png");
       Ca1->Clear(); Ca1->Clear();
       
-      TH1F * wh0_se6_st1_sl1_TIMEPhase2histo;
-      wh0_se6_st1_sl1_TIMEPhase2histo  = (TH1F*) (theFile->Get("wh0_se6_st1_sl1_TIMEPhase2histo"));
-      wh0_se6_st1_sl1_TIMEPhase2histo->SetXTitle("DTDigi time phase2 (ns)");
-      wh0_se6_st1_sl1_TIMEPhase2histo->SetYTitle("counts/ns");
-      wh0_se6_st1_sl1_TIMEPhase2histo->SetTitle("DTDigi time phase-2 wh0 se6 st1 SL1");
-      wh0_se6_st1_sl1_TIMEPhase2histo->Draw();
-      //wh0_se6_st1_sl1_TIMEPhase2histo->SetFillColor(kRed);
-      Ca1->SaveAs("wh0_se6_st1_sl1_TIMEPhase2histo.png");
+      TH1F * selected_chamber_sl1_TIMEPhase2histo;
+      selected_chamber_sl1_TIMEPhase2histo  = (TH1F*) (theFile->Get("selected_chamber_sl1_TIMEPhase2histo"));
+      selected_chamber_sl1_TIMEPhase2histo->SetXTitle("DTDigi time phase2 (ns)");
+      selected_chamber_sl1_TIMEPhase2histo->SetYTitle("counts/ns");
+      selected_chamber_sl1_TIMEPhase2histo->SetTitle("DTDigi time phase-2 selected chamber SL1");
+      selected_chamber_sl1_TIMEPhase2histo->Draw();
+      //selected_chamber_sl1_TIMEPhase2histo->SetFillColor(kRed);
+      Ca1->SaveAs("selected_chamber_sl1_TIMEPhase2histo.png");
       Ca1->Clear(); Ca1->Clear();
       
   }
@@ -208,14 +208,14 @@ void make_up(){
       Ca1->Clear();Ca1->Clear();
 
       //problem here
-      TH1F * wh0_se6_st1_T0Phase2histo;
-      wh0_se6_st1_T0Phase2histo  = (TH1F*) (theFile->Get("wh0_se6_st1_T0Phase2histo"));
-      wh0_se6_st1_T0Phase2histo->SetXTitle("segment t0 time (ns)");
-      wh0_se6_st1_T0Phase2histo->SetYTitle("counts");
-      wh0_se6_st1_T0Phase2histo->SetTitle("segment t0 time phase-2");
-      wh0_se6_st1_T0Phase2histo->Draw();
-      wh0_se6_st1_T0Phase2histo->SetFillColor(kBlack);
-      Ca1->SaveAs("wh0_se6_st1_T0Phase2histo.png");
+      TH1F * selected_chamber_T0Phase2histo;
+      selected_chamber_T0Phase2histo  = (TH1F*) (theFile->Get("selected_chamber_T0Phase2histo"));
+      selected_chamber_T0Phase2histo->SetXTitle("segment t0 time (ns)");
+      selected_chamber_T0Phase2histo->SetYTitle("counts");
+      selected_chamber_T0Phase2histo->SetTitle("segment t0 time phase-2");
+      selected_chamber_T0Phase2histo->Draw();
+      selected_chamber_T0Phase2histo->SetFillColor(kBlack);
+      Ca1->SaveAs("selected_chamber_T0Phase2histo.png");
       Ca1->Clear();Ca1->Clear();
   }
   
@@ -226,7 +226,7 @@ void make_up(){
   wirevslayer  = (TH2F*) (theFile->Get("wirevslayer"));
   wirevslayer->SetXTitle("wire");
   wirevslayer->SetYTitle("L + (SL-1)*2 or SL1:1-4 SL3:5-8");
-  wirevslayer->SetTitle("occupancy phi-layers vs wire wh0 se6 st1");
+  wirevslayer->SetTitle("occupancy phi-layers vs wire selected chamber");
   wirevslayer->Draw("colz");
   Ca1->SaveAs("wirevslayer.png");
   Ca1->Clear(); Ca1->Clear();
@@ -235,73 +235,73 @@ void make_up(){
   wirevslayer  = (TH2F*) (theFile->Get("wirevslayerzTDC"));
   wirevslayer->SetXTitle("wire -0.5 + digiTDC/1600.");
   wirevslayer->SetYTitle("L + (SL-1)*2 or SL1:1-4 SL3:5-8");
-  wirevslayer->SetTitle("occupancy phi-layers vs wire wh0 se6 st1");
+  wirevslayer->SetTitle("occupancy phi-layers vs wire selected chamber");
   wirevslayer->Draw("colz");
   Ca1->SaveAs("wirevslayerzTDC.png");
   Ca1->Clear(); Ca1->Clear();
   */
 
   //4D segments
-  TH1F * wh0_se6_st1_segment_x;
-  wh0_se6_st1_segment_x  = (TH1F*) (theFile->Get("wh0_se6_st1_segment_x"));
-  wh0_se6_st1_segment_x->SetXTitle("4D segment x position (cm)");
-  wh0_se6_st1_segment_x->SetYTitle("counts");
-  wh0_se6_st1_segment_x->SetTitle("4D segment x position (cm)");
-  wh0_se6_st1_segment_x->SetFillColor(kBlack);
-  wh0_se6_st1_segment_x->Draw();
-  Ca1->SaveAs("wh0_se6_st1_segment_x.png");
+  TH1F * selected_chamber_segment_x;
+  selected_chamber_segment_x  = (TH1F*) (theFile->Get("selected_chamber_segment_x"));
+  selected_chamber_segment_x->SetXTitle("4D segment x position (cm)");
+  selected_chamber_segment_x->SetYTitle("counts");
+  selected_chamber_segment_x->SetTitle("4D segment x position (cm)");
+  selected_chamber_segment_x->SetFillColor(kBlack);
+  selected_chamber_segment_x->Draw();
+  Ca1->SaveAs("selected_chamber_segment_x.png");
   Ca1->Clear(); Ca1->Clear();
 
-  TH1F * wh0_se6_st1_segment_tanPhi;
-  wh0_se6_st1_segment_tanPhi  = (TH1F*) (theFile->Get("wh0_se6_st1_segment_tanPhi"));
-  wh0_se6_st1_segment_tanPhi->SetXTitle("4D segment tan(#phi)");
-  wh0_se6_st1_segment_tanPhi->SetYTitle("counts");
-  wh0_se6_st1_segment_tanPhi->SetTitle("4D segment tan(#phi) (radians)");
-  wh0_se6_st1_segment_tanPhi->SetFillColor(kBlack);
-  wh0_se6_st1_segment_tanPhi->Draw();
-  Ca1->SaveAs("wh0_se6_st1_segment_tanPhi.png");
+  TH1F * selected_chamber_segment_tanPhi;
+  selected_chamber_segment_tanPhi  = (TH1F*) (theFile->Get("selected_chamber_segment_tanPhi"));
+  selected_chamber_segment_tanPhi->SetXTitle("4D segment tan(#phi)");
+  selected_chamber_segment_tanPhi->SetYTitle("counts");
+  selected_chamber_segment_tanPhi->SetTitle("4D segment tan(#phi) (radians)");
+  selected_chamber_segment_tanPhi->SetFillColor(kBlack);
+  selected_chamber_segment_tanPhi->Draw();
+  Ca1->SaveAs("selected_chamber_segment_tanPhi.png");
   Ca1->Clear(); Ca1->Clear();
 
-  //TH1F * wh0_se6_st1_segment_BX;
-  //wh0_se6_st1_segment_BX  = (TH1F*) (theFile->Get("wh0_se6_st1_segment_BX"));
-  //wh0_se6_st1_segment_BX->SetXTitle("4D segment BX");
-  //wh0_se6_st1_segment_BX->SetYTitle("counts");
-  //wh0_se6_st1_segment_BX->SetTitle("4D segment BX");
-  //wh0_se6_st1_segment_BX->SetFillColor(kBlack);
-  //wh0_se6_st1_segment_BX->Draw();
-  //Ca1->SaveAs("wh0_se6_st1_segment_BX.png");
+  //TH1F * selected_chamber_segment_BX;
+  //selected_chamber_segment_BX  = (TH1F*) (theFile->Get("selected_chamber_segment_BX"));
+  //selected_chamber_segment_BX->SetXTitle("4D segment BX");
+  //selected_chamber_segment_BX->SetYTitle("counts");
+  //selected_chamber_segment_BX->SetTitle("4D segment BX");
+  //selected_chamber_segment_BX->SetFillColor(kBlack);
+  //selected_chamber_segment_BX->Draw();
+  //Ca1->SaveAs("selected_chamber_segment_BX.png");
   //Ca1->Clear(); Ca1->Clear();
 
 
   //2D correlation JM/4D Segment
 
-  TH2F * wh0_se6_st1_segment_vs_jm_x;
-  wh0_se6_st1_segment_vs_jm_x  = (TH2F*) (theFile->Get("wh0_se6_st1_segment_vs_jm_x"));
-  wh0_se6_st1_segment_vs_jm_x->SetXTitle("segment x position (cm)");
-  wh0_se6_st1_segment_vs_jm_x->SetYTitle("phase-2 L1 primitive x position (cm)");
-  wh0_se6_st1_segment_vs_jm_x->SetTitle("4D segment vs phase-2 L1 primitive x position (cm)");
-  wh0_se6_st1_segment_vs_jm_x->Draw("colz");
-  Ca1->SaveAs("wh0_se6_st1_segment_vs_jm_x.png");
+  TH2F * selected_chamber_segment_vs_jm_x;
+  selected_chamber_segment_vs_jm_x  = (TH2F*) (theFile->Get("selected_chamber_segment_vs_jm_x"));
+  selected_chamber_segment_vs_jm_x->SetXTitle("segment x position (cm)");
+  selected_chamber_segment_vs_jm_x->SetYTitle("phase-2 L1 primitive x position (cm)");
+  selected_chamber_segment_vs_jm_x->SetTitle("4D segment vs phase-2 L1 primitive x position (cm)");
+  selected_chamber_segment_vs_jm_x->Draw("colz");
+  Ca1->SaveAs("selected_chamber_segment_vs_jm_x.png");
   Ca1->Clear(); Ca1->Clear();
 
   
-  TH2F * wh0_se6_st1_segment_vs_jm_T0histo;
-  wh0_se6_st1_segment_vs_jm_T0histo  = (TH2F*) (theFile->Get("wh0_se6_st1_segment_vs_jm_T0histo"));
-  wh0_se6_st1_segment_vs_jm_T0histo->SetXTitle("segment phase-2 t0");
-  wh0_se6_st1_segment_vs_jm_T0histo->SetYTitle("phase-2 L1 primitive t0");
-  wh0_se6_st1_segment_vs_jm_T0histo->SetTitle("4D segment vs phase-2 L1 primitive t0 (ns)");
-  wh0_se6_st1_segment_vs_jm_T0histo->Draw("colz");
-  Ca1->SaveAs("wh0_se6_st1_segment_vs_jm_T0histo.png");
+  TH2F * selected_chamber_segment_vs_jm_T0histo;
+  selected_chamber_segment_vs_jm_T0histo  = (TH2F*) (theFile->Get("selected_chamber_segment_vs_jm_T0histo"));
+  selected_chamber_segment_vs_jm_T0histo->SetXTitle("segment phase-2 t0");
+  selected_chamber_segment_vs_jm_T0histo->SetYTitle("phase-2 L1 primitive t0");
+  selected_chamber_segment_vs_jm_T0histo->SetTitle("4D segment vs phase-2 L1 primitive t0 (ns)");
+  selected_chamber_segment_vs_jm_T0histo->Draw("colz");
+  Ca1->SaveAs("selected_chamber_segment_vs_jm_T0histo.png");
   Ca1->Clear(); Ca1->Clear();
   
   
-  TH2F * wh0_se6_st1_segment_vs_jm_tanPhi;
-  wh0_se6_st1_segment_vs_jm_tanPhi  = (TH2F*) (theFile->Get("wh0_se6_st1_segment_vs_jm_tanPhi"));
-  wh0_se6_st1_segment_vs_jm_tanPhi->SetXTitle("segment tan(#phi)");
-  wh0_se6_st1_segment_vs_jm_tanPhi->SetYTitle("phase-2 L1 primitive algo tan(#phi)");
-  wh0_se6_st1_segment_vs_jm_tanPhi->SetTitle("4D segment vs phase-2 L1 primitive tan(#phi)");
-  wh0_se6_st1_segment_vs_jm_tanPhi->Draw("colz");
-  Ca1->SaveAs("wh0_se6_st1_segment_vs_jm_tanPhi.png");
+  TH2F * selected_chamber_segment_vs_jm_tanPhi;
+  selected_chamber_segment_vs_jm_tanPhi  = (TH2F*) (theFile->Get("selected_chamber_segment_vs_jm_tanPhi"));
+  selected_chamber_segment_vs_jm_tanPhi->SetXTitle("segment tan(#phi)");
+  selected_chamber_segment_vs_jm_tanPhi->SetYTitle("phase-2 L1 primitive algo tan(#phi)");
+  selected_chamber_segment_vs_jm_tanPhi->SetTitle("4D segment vs phase-2 L1 primitive tan(#phi)");
+  selected_chamber_segment_vs_jm_tanPhi->Draw("colz");
+  Ca1->SaveAs("selected_chamber_segment_vs_jm_tanPhi.png");
   Ca1->Clear(); Ca1->Clear();
 
   

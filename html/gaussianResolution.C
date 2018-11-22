@@ -14,62 +14,66 @@ void gaussianResolution(){
   cout<<"getting the file"<<endl;
 
   TFile * theFile = new TFile("../dt_phase2.root");  
-	
-  cout<<"getting the histo"<<endl;
-  
-  string title = "wh0_se6_st1_segment_vs_jm_x_gauss";
 
-  TH1F * residuals = (TH1F*) (theFile->Get(title.c_str()));
+
+  //X
+  {
+      cout<<"getting the histo"<<endl;
+  
+      string title = "selected_chamber_segment_vs_jm_x_gauss";
+
+      TH1F * residuals = (TH1F*) (theFile->Get(title.c_str()));
+      if(!residuals) cout<<"histo not found"<<endl;
 			      
-  residuals->SetTitle(("#Delta x,"+title+" (cm)").c_str());
-  residuals->GetXaxis()->SetTitle(("#Delta x,"+title+" (cm)").c_str());
-  residuals->GetXaxis()->SetRangeUser(-0.02,0.02);
-  residuals->SetLineWidth(3);
-  residuals->Fit("gaus","Q" ,"C" ,-0.02,0.02);
-  float sigma = residuals->GetFunction("gaus")->GetParameter(2);
-  float mean = residuals->GetFunction("gaus")->GetParameter(1);
+      residuals->SetTitle(("#Delta x,"+title+" (cm)").c_str());
+      residuals->GetXaxis()->SetTitle(("#Delta x,"+title+" (cm)").c_str());
+      residuals->GetXaxis()->SetRangeUser(-4,4);
+      residuals->SetLineWidth(3);
+      residuals->Fit("gaus","Q" ,"C",-4,4);
+      float sigma = residuals->GetFunction("gaus")->GetParameter(2);
+      float mean = residuals->GetFunction("gaus")->GetParameter(1);
 
-  cout<<mean<<endl;
-  cout<<sigma<<endl;
+      cout<<mean<<endl;
+      cout<<sigma<<endl;
   
-  stringstream legend;
-  stringstream legend2;
+      stringstream legend;
+      stringstream legend2;
     
-  TLegend *leg = new TLegend(0.65,0.9,0.9,0.65);
-  legend.str("");
-  legend<<"#sigma = "<<setprecision(3)<<sigma*10<<"mm";   
-  legend2.str("");
-  legend2<<"<x> = "<<setprecision(3)<<mean*10<<"mm";
+      TLegend *leg = new TLegend(0.65,0.9,0.9,0.65);
+      legend.str("");
+      legend<<"#sigma = "<<setprecision(3)<<sigma<<"cm";   
+      legend2.str("");
+      legend2<<"<x> = "<<setprecision(3)<<mean<<"cm";
 
-  residuals->GetFunction("gaus")->SetLineWidth(4);
-  leg->AddEntry(residuals->GetFunction("gaus"),legend.str().c_str(),"l");
-  leg->AddEntry(residuals->GetFunction("gaus"),legend2.str().c_str(),"l");
+      residuals->GetFunction("gaus")->SetLineWidth(4);
+      leg->AddEntry(residuals->GetFunction("gaus"),legend.str().c_str(),"l");
+      leg->AddEntry(residuals->GetFunction("gaus"),legend2.str().c_str(),"l");
   
-  if(!residuals) cout<<"histo not found"<<endl;
-  
-  cout<<"creating canvas"<<endl;
-  TCanvas * Ca0 = new TCanvas("Ca0","Residuals",1200,800);
-  residuals->Draw();
-  leg->Draw("same");
-  cout<<"saving plot"<<endl;
-  // Ca0->SetLeftMargin(0.25);
-  Ca0->SaveAs((title+".png").c_str());
-
+      
+      cout<<"creating canvas"<<endl;
+      TCanvas * Ca0 = new TCanvas("Ca0","Residuals",1200,800);
+      residuals->Draw();
+      leg->Draw("same");
+      cout<<"saving plot"<<endl;
+      // Ca0->SetLeftMargin(0.25);
+      Ca0->SaveAs((title+".png").c_str());
+  }
   
   //T0
   {
 
       cout<<"getting the histo"<<endl;
-  
-      string title = "wh0_se6_st1_segment_vs_jm_T0histo_gauss";
+      
+      string title = "selected_chamber_segment_vs_jm_T0histo_gauss";
 
       TH1F * T0gauss = (TH1F*) (theFile->Get(title.c_str()));
+      if(!T0gauss) cout<<"histo not found"<<endl;
 			      
       T0gauss->GetXaxis()->SetTitle(("#Delta t0,"+title+" (ns)").c_str());
       T0gauss->SetTitle(("#Delta t0,"+title+" (ns)").c_str());
-      T0gauss->GetXaxis()->SetRangeUser(-10,40);
+      T0gauss->GetXaxis()->SetRangeUser(-100,100);
       T0gauss->SetLineWidth(3);
-      T0gauss->Fit("gaus","Q" ,"C" ,-10,40);
+      T0gauss->Fit("gaus","Q" ,"C" ,-100,100);
       float sigma = T0gauss->GetFunction("gaus")->GetParameter(2);
       float mean = T0gauss->GetFunction("gaus")->GetParameter(1);
 
@@ -89,7 +93,6 @@ void gaussianResolution(){
       leg->AddEntry(T0gauss->GetFunction("gaus"),legend.str().c_str(),"l");
       leg->AddEntry(T0gauss->GetFunction("gaus"),legend2.str().c_str(),"l");
   
-      if(!T0gauss) cout<<"histo not found"<<endl;
   
       cout<<"creating canvas"<<endl;
       TCanvas * Ca0 = new TCanvas("Ca0","T0gauss",1200,800);
@@ -105,15 +108,16 @@ void gaussianResolution(){
 
       cout<<"getting the histo"<<endl;
   
-      string title = "wh0_se6_st1_segment_vs_jm_tanPhi_gauss";
+      string title = "selected_chamber_segment_vs_jm_tanPhi_gauss";
 
       TH1F * tanPhigauss = (TH1F*) (theFile->Get(title.c_str()));
-			      
+      if(!tanPhigauss) cout<<"histo not found"<<endl;
+      
       tanPhigauss->GetXaxis()->SetTitle(("#Delta tan #phi,"+title+"()").c_str());
       tanPhigauss->SetTitle(("#Delta tan #phi,"+title+"()").c_str());
-      tanPhigauss->GetXaxis()->SetRangeUser(-0.05,0.05);
+      tanPhigauss->GetXaxis()->SetRangeUser(-0.5,0.5);
       tanPhigauss->SetLineWidth(3);
-      tanPhigauss->Fit("gaus","Q" ,"C" ,-0.05,0.05);
+      tanPhigauss->Fit("gaus","Q" ,"C" ,-0.5,0.5);
       float sigma = tanPhigauss->GetFunction("gaus")->GetParameter(2);
       float mean = tanPhigauss->GetFunction("gaus")->GetParameter(1);
 
@@ -133,8 +137,6 @@ void gaussianResolution(){
       leg->AddEntry(tanPhigauss->GetFunction("gaus"),legend.str().c_str(),"l");
       leg->AddEntry(tanPhigauss->GetFunction("gaus"),legend2.str().c_str(),"l");
   
-      if(!tanPhigauss) cout<<"histo not found"<<endl;
-  
       cout<<"creating canvas"<<endl;
       TCanvas * Ca0 = new TCanvas("Ca0","tanPhigauss",1200,800);
       tanPhigauss->Draw();
@@ -142,8 +144,6 @@ void gaussianResolution(){
       cout<<"saving plot"<<endl;
       Ca0->SaveAs((title+".png").c_str());
   }
-
-
 
   exit(0);
   

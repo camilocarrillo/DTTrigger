@@ -63,39 +63,39 @@ class DTTrigPhase2Prod: public edm::EDProducer{
     TFile * theFileOut;
     
     TH1F * allTDChisto;
-    TH1F * wh0_se6_st1_sl1or3_TDChisto;
-    TH1F * wh0_se6_st1_sl1_TDChisto;
-
+    TH1F * selected_chamber_sl1_no_seg_selection_TDChisto;
+    TH1F * selected_chamber_sl1_TDChisto;
+    
     TH1F * allTDCPhase2histo;
-    TH1F * wh0_se6_st1_sl1or3_TDCPhase2histo;
-    TH1F * wh0_se6_st1_sl1_TDCPhase2histo;
+    TH1F * selected_chamber_sl1_no_seg_selection_TDCPhase2histo;
+    TH1F * selected_chamber_sl1_TDCPhase2histo;
     
     TH1F * allTIMEhisto;
-    TH1F * wh0_se6_st1_sl1or3_TIMEhisto;
-    TH1F * wh0_se6_st1_sl1_TIMEhisto;
+    TH1F * selected_chamber_sl1_no_seg_selection_TIMEhisto;
+    TH1F * selected_chamber_sl1_TIMEhisto;
     
     TH1F * allTIMEPhase2histo;
-    TH1F * wh0_se6_st1_sl1or3_TIMEPhase2histo;
-    TH1F * wh0_se6_st1_sl1_TIMEPhase2histo;
+    TH1F * selected_chamber_sl1_no_seg_selection_TIMEPhase2histo;
+    TH1F * selected_chamber_sl1_TIMEPhase2histo;
 
 
     TH1F * allT0histo;
     TH1F * allT0Phase2histo;
     
-    //TH1F * wh0_se6_st1_T0histo;
-    TH1F * wh0_se6_st1_T0Phase2histo;
+    //TH1F * selected_chamber_T0histo;
+    TH1F * selected_chamber_T0Phase2histo;
 
-    TH1F * wh0_se6_st1_segment_x;
-    TH1F * wh0_se6_st1_segment_tanPhi;
+    TH1F * selected_chamber_segment_x;
+    TH1F * selected_chamber_segment_tanPhi;
 
-    TH2F * wh0_se6_st1_segment_vs_jm_x;     
-    TH1F * wh0_se6_st1_segment_vs_jm_x_gauss;
+    TH2F * selected_chamber_segment_vs_jm_x;     
+    TH1F * selected_chamber_segment_vs_jm_x_gauss;
     
-    TH2F * wh0_se6_st1_segment_vs_jm_tanPhi;
-    TH1F * wh0_se6_st1_segment_vs_jm_tanPhi_gauss;
+    TH2F * selected_chamber_segment_vs_jm_tanPhi;
+    TH1F * selected_chamber_segment_vs_jm_tanPhi_gauss;
     
-    TH2F * wh0_se6_st1_segment_vs_jm_T0histo;
-    TH1F * wh0_se6_st1_segment_vs_jm_T0histo_gauss;
+    TH2F * selected_chamber_segment_vs_jm_T0histo;
+    TH1F * selected_chamber_segment_vs_jm_T0histo_gauss;
     
     //TH2F * wirevslayer;
     //TH2F * wirevslayerzTDC;
