@@ -188,13 +188,13 @@ void DTTrigPhase2Prod::beginRun(edm::Run const& iRun, const edm::EventSetup& iEv
     selected_chamber_segment_tanPhi = new TH1F("selected_chamber_segment_tanPhi","selected_chamber_segment_tanPhi",100,-1.,1.);
     
     selected_chamber_segment_vs_jm_x = new TH2F("selected_chamber_segment_vs_jm_x","selected_chamber_segment_vs_jm_x",100,-102,102,100,-102,102);
-    selected_chamber_segment_vs_jm_x_gauss = new TH1F("selected_chamber_segment_vs_jm_x_gauss","selected_chamber_segment_vs_jm_x_gauss",300,-4,4.);
+    selected_chamber_segment_vs_jm_x_gauss = new TH1F("selected_chamber_segment_vs_jm_x_gauss","selected_chamber_segment_vs_jm_x_gauss",3000,-4,4.);
 
     selected_chamber_segment_vs_jm_tanPhi = new TH2F("selected_chamber_segment_vs_jm_tanPhi","selected_chamber_segment_vs_jm_tanPhi",100,-1.,1.,100,-1.,1.);
-    selected_chamber_segment_vs_jm_tanPhi_gauss = new TH1F("selected_chamber_segment_vs_jm_tanPhi_gauss","selected_chamber_segment_vs_jm_tanPhi_gauss",300,-0.5,0.5);
+    selected_chamber_segment_vs_jm_tanPhi_gauss = new TH1F("selected_chamber_segment_vs_jm_tanPhi_gauss","selected_chamber_segment_vs_jm_tanPhi_gauss",3000,-0.5,0.5);
 
     selected_chamber_segment_vs_jm_T0histo= new TH2F("selected_chamber_segment_vs_jm_T0histo","selected_chamber_segment_vs_jm_T0histo",201,0,90000,201,0,90000);
-    selected_chamber_segment_vs_jm_T0histo_gauss= new TH1F("selected_chamber_segment_vs_jm_T0histo_gauss","selected_chamber_segment_vs_jm_T0histo_gauss",300,-100,100);
+    selected_chamber_segment_vs_jm_T0histo_gauss= new TH1F("selected_chamber_segment_vs_jm_T0histo_gauss","selected_chamber_segment_vs_jm_T0histo_gauss",3000,-100,100);
     
     //wirevslayer     = new TH2F("wirevslayer","wirevslayer",50,0.5,50.5,8,0.5,8.5);
     //wirevslayerzTDC = new TH2F("wirevslayerzTDC","wirevslayerzTDC",50*1600,0.5,50+0.5,8,0.5,8.5);
@@ -210,7 +210,7 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
   iEvent.getByToken(dt4DSegments, all4DSegments);
   if(my_debug) std::cout<<"DTp2: I got the segments"<<std::endl;
 
-  DTChamberId selected_chamber_ID(0,4,6);
+  DTChamberId selected_chamber_ID(0,1,6);
   //DTChamberId selected_chamber_ID(0,1,6);//ciemat_chamber
 
   //digiLoop
@@ -277,24 +277,35 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
       }
      
       //using the loop to fill up map of shifts with the position of the wire 1 of the layer 2 
+
       DTWireId wireId1(segment1->chamberId(),1,2,1);
       int firstWire1 = dtGeo->layer(wireId1)->specificTopology().firstChannel();
-      std::cout<<"Dtp2: from geometry I got for SL=1 "<<wireId1<<" "  <<dtGeo->layer(wireId1)->specificTopology().wirePosition(firstWire1)<<"cm first wire="<<firstWire1<<std::endl;
+      
+      double w0=dtGeo->layer(wireId1)->specificTopology().wirePosition(1);
+      GlobalPoint w1=dtGeom->layer(wireId)->toGlobal(Local3DPoint(w0, 0., 0.));
+      LocalPoint w2=dtGeom->chamber(segment->chamberId())->toLocal(w1);
+      
+
+
+      if(my_debug) std::cout<<"Dtp2: from geometry I got for SL=1 "<<wireId1<<" "  <<dtGeo->layer(wireId1)->specificTopology().wirePosition(firstWire1)<<"cm first wire="<<firstWire1<<std::endl;
+
+      if(my_debug) std::cout<<"Dtp2: from jorge:"<<w2.x()<<std::endl;
+
       shift_jm_cmssw[wireId1]=dtGeo->layer(wireId1)->specificTopology().wirePosition(firstWire1);
 
       
       if(segment1->chamberId().station()!=4){
 	  DTWireId wireId2(segment1->chamberId(),2,2,1);
 	  int firstWire2 = dtGeo->layer(wireId2)->specificTopology().firstChannel();
-	  std::cout<<"Dtp2: from geometry I got for SL=2 "<<wireId2<<" "  <<dtGeo->layer(wireId2)->specificTopology().wirePosition(firstWire2)<<"cm first wire="<<firstWire2<<std::endl;
+	  if(my_debug) std::cout<<"Dtp2: from geometry I got for SL=2 "<<wireId2<<" "  <<dtGeo->layer(wireId2)->specificTopology().wirePosition(firstWire2)<<"cm first wire="<<firstWire2<<std::endl;
 	  shift_jm_cmssw[wireId2]=dtGeo->layer(wireId2)->specificTopology().wirePosition(firstWire2);
       }
 
       DTWireId wireId3(segment1->chamberId(),3,2,1);
       int firstWire3 = dtGeo->layer(wireId3)->specificTopology().firstChannel();
-      std::cout<<"Dtp2: from geometry I got for SL=3 "<<wireId3<<" "<<dtGeo->layer(wireId3)->specificTopology().wirePosition(firstWire3)<<"cm first wire="<<firstWire3<<std::endl;
+      if(my_debug) std::cout<<"Dtp2: from geometry I got for SL=3 "<<wireId3<<" "<<dtGeo->layer(wireId3)->specificTopology().wirePosition(firstWire3)<<"cm first wire="<<firstWire3<<std::endl;
       shift_jm_cmssw[wireId3]=dtGeo->layer(wireId3)->specificTopology().wirePosition(firstWire3);
-		  
+      
 
   }
 

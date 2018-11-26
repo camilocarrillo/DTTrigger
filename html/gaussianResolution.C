@@ -27,9 +27,9 @@ void gaussianResolution(){
 			      
       residuals->SetTitle(("#Delta x,"+title+" (cm)").c_str());
       residuals->GetXaxis()->SetTitle(("#Delta x,"+title+" (cm)").c_str());
-      residuals->GetXaxis()->SetRangeUser(-4,4);
+      residuals->GetXaxis()->SetRangeUser(1.55,1.65);
       residuals->SetLineWidth(3);
-      residuals->Fit("gaus","Q" ,"C",-4,4);
+      residuals->Fit("gaus","Q" ,"C",1.55,1.65);
       float sigma = residuals->GetFunction("gaus")->GetParameter(2);
       float mean = residuals->GetFunction("gaus")->GetParameter(1);
 
@@ -51,7 +51,7 @@ void gaussianResolution(){
   
       
       cout<<"creating canvas"<<endl;
-      TCanvas * Ca0 = new TCanvas("Ca0","Residuals",1200,800);
+      TCanvas * Ca0 = new TCanvas("Ca0","Residuals",1200,600);
       residuals->Draw();
       leg->Draw("same");
       cout<<"saving plot"<<endl;
@@ -59,7 +59,49 @@ void gaussianResolution(){
       Ca0->SaveAs((title+".png").c_str());
   }
   
-  //T0
+  //tanPhi
+  {
+
+      cout<<"getting the histo"<<endl;
+  
+      string title = "selected_chamber_segment_vs_jm_tanPhi_gauss";
+
+      TH1F * tanPhigauss = (TH1F*) (theFile->Get(title.c_str()));
+      if(!tanPhigauss) cout<<"histo not found"<<endl;
+      
+      tanPhigauss->GetXaxis()->SetTitle(("#Delta tan #phi,"+title+"()").c_str());
+      tanPhigauss->SetTitle(("#Delta tan #phi,"+title+"()").c_str());
+      tanPhigauss->GetXaxis()->SetRangeUser(-0.1,0.1);
+      tanPhigauss->SetLineWidth(3);
+      tanPhigauss->Fit("gaus","Q" ,"C" ,-0.1,0.1);
+      float sigma = tanPhigauss->GetFunction("gaus")->GetParameter(2);
+      float mean = tanPhigauss->GetFunction("gaus")->GetParameter(1);
+
+      cout<<mean<<endl;
+      cout<<sigma<<endl;
+  
+      stringstream legend;
+      stringstream legend2;
+    
+      TLegend *leg = new TLegend(0.65,0.9,0.9,0.65);
+      legend.str("");
+      legend<<"#sigma = "<<setprecision(3)<<sigma<<"";   
+      legend2.str("");
+      legend2<<"<x> = "<<setprecision(3)<<mean<<"";
+
+      tanPhigauss->GetFunction("gaus")->SetLineWidth(4);
+      leg->AddEntry(tanPhigauss->GetFunction("gaus"),legend.str().c_str(),"l");
+      leg->AddEntry(tanPhigauss->GetFunction("gaus"),legend2.str().c_str(),"l");
+  
+      cout<<"creating canvas"<<endl;
+      TCanvas * Ca0 = new TCanvas("Ca0","tanPhigauss",1200,600);
+      tanPhigauss->Draw();
+      leg->Draw("same");
+      cout<<"saving plot"<<endl;
+      Ca0->SaveAs((title+".png").c_str());
+  }
+
+    //T0
   {
 
       cout<<"getting the histo"<<endl;
@@ -95,55 +137,13 @@ void gaussianResolution(){
   
   
       cout<<"creating canvas"<<endl;
-      TCanvas * Ca0 = new TCanvas("Ca0","T0gauss",1200,800);
+      TCanvas * Ca0 = new TCanvas("Ca0","T0gauss",1200,600);
       T0gauss->Draw();
       leg->Draw("same");
       cout<<"saving plot"<<endl;
       Ca0->SaveAs((title+".png").c_str());
   }
 
-
-  //tanPhi
-  {
-
-      cout<<"getting the histo"<<endl;
-  
-      string title = "selected_chamber_segment_vs_jm_tanPhi_gauss";
-
-      TH1F * tanPhigauss = (TH1F*) (theFile->Get(title.c_str()));
-      if(!tanPhigauss) cout<<"histo not found"<<endl;
-      
-      tanPhigauss->GetXaxis()->SetTitle(("#Delta tan #phi,"+title+"()").c_str());
-      tanPhigauss->SetTitle(("#Delta tan #phi,"+title+"()").c_str());
-      tanPhigauss->GetXaxis()->SetRangeUser(-0.5,0.5);
-      tanPhigauss->SetLineWidth(3);
-      tanPhigauss->Fit("gaus","Q" ,"C" ,-0.5,0.5);
-      float sigma = tanPhigauss->GetFunction("gaus")->GetParameter(2);
-      float mean = tanPhigauss->GetFunction("gaus")->GetParameter(1);
-
-      cout<<mean<<endl;
-      cout<<sigma<<endl;
-  
-      stringstream legend;
-      stringstream legend2;
-    
-      TLegend *leg = new TLegend(0.65,0.9,0.9,0.65);
-      legend.str("");
-      legend<<"#sigma = "<<setprecision(3)<<sigma<<"";   
-      legend2.str("");
-      legend2<<"<x> = "<<setprecision(3)<<mean<<"";
-
-      tanPhigauss->GetFunction("gaus")->SetLineWidth(4);
-      leg->AddEntry(tanPhigauss->GetFunction("gaus"),legend.str().c_str(),"l");
-      leg->AddEntry(tanPhigauss->GetFunction("gaus"),legend2.str().c_str(),"l");
-  
-      cout<<"creating canvas"<<endl;
-      TCanvas * Ca0 = new TCanvas("Ca0","tanPhigauss",1200,800);
-      tanPhigauss->Draw();
-      leg->Draw("same");
-      cout<<"saving plot"<<endl;
-      Ca0->SaveAs((title+".png").c_str());
-  }
 
   exit(0);
   
