@@ -15,7 +15,7 @@ process.GlobalTag.globaltag = "90X_dataRun2_Express_v2"
 
 
 process.dtTriggerPhase2PrimitiveDigis.digiTag = "hltMuonDTDigis"
-process.dtTriggerPhase2PrimitiveDigis.debug = False
+process.dtTriggerPhase2PrimitiveDigis.debug = True
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(

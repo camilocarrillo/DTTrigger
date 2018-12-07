@@ -27,9 +27,9 @@ void gaussianResolution(){
 			      
       residuals->SetTitle(("#Delta x,"+title+" (cm)").c_str());
       residuals->GetXaxis()->SetTitle(("#Delta x,"+title+" (cm)").c_str());
-      residuals->GetXaxis()->SetRangeUser(1.55,1.65);
+      residuals->GetXaxis()->SetRangeUser(-0.05,0.05);
       residuals->SetLineWidth(3);
-      residuals->Fit("gaus","Q" ,"C",1.55,1.65);
+      residuals->Fit("gaus","Q" ,"C",-0.05,0.05);
       float sigma = residuals->GetFunction("gaus")->GetParameter(2);
       float mean = residuals->GetFunction("gaus")->GetParameter(1);
 

@@ -256,6 +256,7 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
   
   std::map<DTChamberId,int> DTSegmentCounter;
   std::map<DTWireId,double> shift_jm_cmssw;
+  std::map<DTWireId,double> z_layer;
   
   //counting all segments and making plots for all segments:--------------------------//
   DTRecSegment4DCollection::const_iterator segment1;
@@ -277,36 +278,33 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
       }
      
       //using the loop to fill up map of shifts with the position of the wire 1 of the layer 2 
-
       DTWireId wireId1(segment1->chamberId(),1,2,1);
-      int firstWire1 = dtGeo->layer(wireId1)->specificTopology().firstChannel();
       
-      double w0=dtGeo->layer(wireId1)->specificTopology().wirePosition(1);
-      GlobalPoint w1=dtGeom->layer(wireId)->toGlobal(Local3DPoint(w0, 0., 0.));
-      LocalPoint w2=dtGeom->chamber(segment->chamberId())->toLocal(w1);
-      
+      LocalPoint wireInChamberFrame = (dtGeo->chamber(segment1->chamberId())->toLocal(dtGeo->layer(wireId1)->toGlobal(Local3DPoint(dtGeo->layer(wireId1)->specificTopology().wirePosition(1), 0., 0.))));
+      shift_jm_cmssw[wireId1]=wireInChamberFrame.x();
+      z_layer[wireId1]=wireInChamberFrame.z()-0.65;
+      if(my_debug) std::cout<<"DTp2:\t wireInChamberFrame.z()="<<z_layer[wireId1]<<"cm for "<<wireId1<<std::endl;
 
-
-      if(my_debug) std::cout<<"Dtp2: from geometry I got for SL=1 "<<wireId1<<" "  <<dtGeo->layer(wireId1)->specificTopology().wirePosition(firstWire1)<<"cm first wire="<<firstWire1<<std::endl;
-
-      if(my_debug) std::cout<<"Dtp2: from jorge:"<<w2.x()<<std::endl;
-
-      shift_jm_cmssw[wireId1]=dtGeo->layer(wireId1)->specificTopology().wirePosition(firstWire1);
-
+      if(my_debug) std::cout<<"Dtp2: from geometry I got for SL=1 "<<wireId1<<" "<<shift_jm_cmssw[wireId1]<<std::endl;
       
       if(segment1->chamberId().station()!=4){
 	  DTWireId wireId2(segment1->chamberId(),2,2,1);
-	  int firstWire2 = dtGeo->layer(wireId2)->specificTopology().firstChannel();
-	  if(my_debug) std::cout<<"Dtp2: from geometry I got for SL=2 "<<wireId2<<" "  <<dtGeo->layer(wireId2)->specificTopology().wirePosition(firstWire2)<<"cm first wire="<<firstWire2<<std::endl;
-	  shift_jm_cmssw[wireId2]=dtGeo->layer(wireId2)->specificTopology().wirePosition(firstWire2);
+	  LocalPoint wireInChamberFrame2
+	      =(dtGeo->chamber(segment1->chamberId())->toLocal(dtGeo->layer(wireId2)->toGlobal(Local3DPoint(dtGeo->layer(wireId2)->specificTopology().wirePosition(1), 0., 0.))));
+	  shift_jm_cmssw[wireId2]=wireInChamberFrame2.x();
+	  z_layer[wireId2]=wireInChamberFrame2.z()-0.65;
+
+	  if(my_debug) std::cout<<"Dtp2: from geometry I got for SL=1 "<<wireId2<<" "<<shift_jm_cmssw[wireId2]<<std::endl;
       }
-
-      DTWireId wireId3(segment1->chamberId(),3,2,1);
-      int firstWire3 = dtGeo->layer(wireId3)->specificTopology().firstChannel();
-      if(my_debug) std::cout<<"Dtp2: from geometry I got for SL=3 "<<wireId3<<" "<<dtGeo->layer(wireId3)->specificTopology().wirePosition(firstWire3)<<"cm first wire="<<firstWire3<<std::endl;
-      shift_jm_cmssw[wireId3]=dtGeo->layer(wireId3)->specificTopology().wirePosition(firstWire3);
       
+      DTWireId wireId3(segment1->chamberId(),3,2,1);
+      LocalPoint wireInChamberFrame3 
+	  =(dtGeo->chamber(segment1->chamberId())->toLocal(dtGeo->layer(wireId3)->toGlobal(Local3DPoint(dtGeo->layer(wireId3)->specificTopology().wirePosition(1), 0., 0.))));
+      shift_jm_cmssw[wireId3]=wireInChamberFrame3.x();
+      z_layer[wireId3]=wireInChamberFrame3.z()-0.65;
+      if(my_debug) std::cout<<"DTp2:\t wireInChamberFrame.z()="<<z_layer[wireId3]<<"cm for "<<wireId3<<std::endl;
 
+      if(my_debug) std::cout<<"Dtp2: from geometry I got for SL=1 "<<wireId3<<" "<<shift_jm_cmssw[wireId3]<<std::endl;
   }
 
   //focus on selected chamber------------------------------------------------------------//
@@ -329,7 +327,8 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 	      
 	      //x
 	      LocalPoint segmentPosition= segment->localPosition();
-	      double segment_x=segmentPosition.x()-11.75*segment_tanPhi; //constant for all the chambers
+	      DTWireId wireId(segment->chamberId(),1,2,1);
+	      double segment_x=segmentPosition.x()-z_layer[wireId]*segment_tanPhi; //constant for all the chambers
 	      selected_chamber_segment_x->Fill(segment_x);
 	      
 	      if(my_debug) std::cout<<"DTp2: we found a perfect segment in selected's chamber"<<std::endl;
