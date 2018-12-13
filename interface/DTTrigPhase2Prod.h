@@ -16,6 +16,8 @@
 #include "L1Trigger/DTTrigger/src/muonpath.h"
 #include "L1Trigger/DTTrigger/src/analtypedefs.h"
 
+#include<fstream>
+
 #define MAX_VERT_ARRANG 4
 
 class TFile;
@@ -115,6 +117,7 @@ class DTTrigPhase2Prod: public edm::EDProducer{
     MP_QUALITY getMinimumQuality(void);
 
     const STATISTICS* getStatistics(void);
+
 
  private:
     
@@ -225,6 +228,8 @@ class DTTrigPhase2Prod: public edm::EDProducer{
     int getOmittedHit(int idx);
     
     int compute_pathId(MuonPath *mPath);
+
+    std::ofstream log_file;
 
 
 };

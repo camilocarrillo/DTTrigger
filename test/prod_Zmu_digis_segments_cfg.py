@@ -119,7 +119,7 @@ process.maxEvents = cms.untracked.PSet(
 
 process.out = cms.OutputModule("PoolOutputModule",
                                outputCommands = cms.untracked.vstring('drop *','keep *_muonDTDigis_*_*','keep *_dt4DSegments_*_*'),
-                               fileName = cms.untracked.string('digis_segments_Run2016BSingleMuonRAW-RECO.root')
+                               fileName = cms.untracked.string('/store/user/carrillo/digis_segments_Run2016BSingleMuonRAW-RECO.root')
 )
 
 

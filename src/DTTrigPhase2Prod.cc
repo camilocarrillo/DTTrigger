@@ -66,6 +66,9 @@ DTTrigPhase2Prod::DTTrigPhase2Prod(const ParameterSet& pset) :
     outValidMuonPath(outValidMuonPath)
     
 {
+
+  log_file.open("log_file.txt");
+  
     produces<L1MuDTChambPhContainer>();
     produces<L1MuDTChambThContainer>();
 
@@ -135,6 +138,7 @@ DTTrigPhase2Prod::~DTTrigPhase2Prod(){
     theFileOut->Write();
     theFileOut->Close();
     if (my_trig) delete my_trig;
+    log_file.close();
 }
 
 void DTTrigPhase2Prod::beginRun(edm::Run const& iRun, const edm::EventSetup& iEventSetup) {
@@ -452,6 +456,26 @@ void DTTrigPhase2Prod::produce(Event & iEvent, const EventSetup& iEventSetup){
 		      if(my_debug) std::cout<<"DTp2: segment_t0Phase2="<<segment_t0Phase2
 					    <<" jm_t0="<<jm_t0
 					    <<std::endl;     
+		      
+		      log_file<<ptrMuonPath->getQuality()<<" "<<ptrMuonPath->getBxTimeValue()<<" "<<ptrMuonPath->getBxNumId()
+			      <<" "<<ptrMuonPath->getPrimitive(0)->getChannelId()
+			      <<" "<<ptrMuonPath->getPrimitive(1)->getChannelId()
+			      <<" "<<ptrMuonPath->getPrimitive(2)->getChannelId()
+			      <<" "<<ptrMuonPath->getPrimitive(3)->getChannelId()
+
+			      <<" "<<ptrMuonPath->getPrimitive(0)->getTDCTime()
+			      <<" "<<ptrMuonPath->getPrimitive(1)->getTDCTime()
+			      <<" "<<ptrMuonPath->getPrimitive(2)->getTDCTime()
+			      <<" "<<ptrMuonPath->getPrimitive(3)->getTDCTime()
+
+			      <<" "<<horizLayout[0]
+			      <<" "<<horizLayout[1]
+			      <<" "<<horizLayout[2]
+			      <<" "<<horizLayout[3]
+
+			      <<" "<<ptrMuonPath->getHorizPos()
+			      <<" "<<ptrMuonPath->getTanPhi()
+			      <<" "<<ptrMuonPath->getChiSq()<<endl;
 		  }
 		  
 		  delete ptrMuonPath;
